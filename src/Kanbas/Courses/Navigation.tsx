@@ -7,9 +7,9 @@ export default function CoursesNavigation() {
         </Link><br/>
       <Link id="wd-course-piazza-link"  to="/Kanbas/Courses/1234/Piazza">Piazza</Link><br/>
       <Link id="wd-course-zoom-link"    to="/Kanbas/Courses/1234/Zoom">Zoom</Link><br/>
-      <Link id="wd-course-quizzes-link" to="/Kanbas/Courses/1234/Assignments">
+      <Link id="wd-course-assignments-link" to="/Kanbas/Courses/1234/Assignments">
           Assignments</Link><br/>
-      <Link id="wd-course-assignments-link" to="/Kanbas/Courses/1234/Quizzes">Quizzes
+      <Link id="wd-course-quizzes-link" to="/Kanbas/Courses/1234/Quizzes">Quizzes
         </Link><br/>
       <Link id="wd-course-grades-link"  to="/Kanbas/Courses/1234/Grades">Grades</Link><br/>
       <Link id="wd-course-people-link"  to="/Kanbas/People">People</Link><br/>
