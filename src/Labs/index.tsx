@@ -7,7 +7,7 @@ export default function Labs() {
   return (
     <div id="wd-labs">
       <h1>Labs</h1>
-      <h2>Mac Creamer</h2>
+      <h2>Mac Creamer - Section 2</h2>
       <TOC />
       <Routes>
         <Route path="/" element={<Navigate to="Lab1" />} />
