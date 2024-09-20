@@ -1,6 +1,6 @@
 export default function Positions(){
     return (
-        <div id='wd-css-position-all'>
+        <div>
             {/* Can only submit one parent element per JSX expression */}
             <div id="wd-css-position-relative">
                 <h2>Relative</h2>
