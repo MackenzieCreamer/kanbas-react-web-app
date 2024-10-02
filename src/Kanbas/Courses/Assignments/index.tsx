@@ -30,7 +30,7 @@ export default function Assignments() {
               <BsGripVertical className="me-2 fs-3" />
               <FaCaretDown className="me-1 fs-3"/>
               <div>ASSIGNMENTS</div>
-              <div className="ms-auto bg-light ps-2 pe-2 rounded-pill">40% of Total</div>
+              <div className="ms-auto bg-light ps-2 pe-2 me-1 rounded-pill">40% of Total</div>
               <GroupControlButtons />
             </div>
             <ul className="wd-assignments list-group rounded-0 border-start border-success border-5">
@@ -38,7 +38,7 @@ export default function Assignments() {
                 <BsGripVertical className="me-2 fs-3" />
                 <LiaClipboardListSolid className="me-2 fs-3 text-success"/>
                 <div className="d-flex flex-column align-content-center w-75">
-                  <a className="wd-assignment-link text-decoration-none text-dark"
+                  <a className="wd-assignment-link text-decoration-none text-dark fw-bold"
                     href="#/Kanbas/Courses/1234/Assignments/123">
                     A1 - ENV + HTML
                   </a>
@@ -52,7 +52,7 @@ export default function Assignments() {
                 <BsGripVertical className="me-2 fs-3" />
                 <LiaClipboardListSolid className="me-2 fs-3 text-success"/>
                 <div className="d-flex flex-column align-content-center w-75">
-                  <a className="wd-assignment-link text-decoration-none text-dark"
+                  <a className="wd-assignment-link text-decoration-none text-dark fw-bold"
                     href="#/Kanbas/Courses/1234/Assignments/123">
                     A2 - CSS + BOOTSTRAP
                   </a>
@@ -66,7 +66,7 @@ export default function Assignments() {
                 <BsGripVertical className="me-2 fs-3" />
                 <LiaClipboardListSolid className="me-2 fs-3 text-success"/>
                 <div className="d-flex flex-column align-content-center w-75">
-                  <a className="wd-assignment-link text-decoration-none text-dark"
+                  <a className="wd-assignment-link text-decoration-none text-dark fw-bold"
                     href="#/Kanbas/Courses/1234/Assignments/123">
                     A3 - JAVASCRIPT + REACT
               </a>
