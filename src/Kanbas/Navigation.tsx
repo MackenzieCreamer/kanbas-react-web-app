@@ -8,6 +8,8 @@ export default function KanbasNavigation() {
   const { pathname } = useLocation();
   const notActive = "list-group-item text-white bg-black text-center border-0"
   const active = "list-group-item text-center border-0 text-danger bg-white"
+  const accountActive = "fs-1 text text-secondary"
+  const accountNotActive = "fs-1 text text-white"
   return (
     <div id="wd-kanbas-navigation" style={{ width: 110 }} 
          className="list-group rounded-0 position-fixed
@@ -18,7 +20,7 @@ export default function KanbasNavigation() {
         <img src="/images/NEU.png" width="75px" /></a><br />
       <Link to="/Kanbas/Account" id="wd-account-link"
         className={`nav-link ${pathname.includes("Account") ? active : notActive}`}>
-        <FaRegCircleUser className="fs-1 text text-white" /><br />
+        <FaRegCircleUser className={`${pathname.includes("Account") ? accountActive : accountNotActive}`} /><br />
         Account </Link>
       <Link to="/Kanbas/Dashboard" id="wd-dashboard-link"
         className={`nav-link ${pathname.includes("Dashboard") ? active : notActive}`}>
