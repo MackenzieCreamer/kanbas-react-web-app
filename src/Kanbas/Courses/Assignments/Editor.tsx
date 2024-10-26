@@ -1,23 +1,38 @@
-import * as db from "../../Database";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { addAssignment, updateAssignment } from "./reducer";
+import { useState } from "react";
 
 
 export default function AssignmentEditor() {
   const { cid,aid } = useParams();
-  const assignments = db.assignments;
-  const assignment = assignments.filter((assignment: any) => assignment._id === aid)[0]
-  console.log(assignment)
+  const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+  const dispatch = useDispatch();
+
+  const initialState = assignments.filter((assignment: any) => assignment._id === aid)[0] !== undefined ? 
+    assignments.filter((assignment: any) => assignment._id === aid)[0] : {
+      title: "New Title",
+      description: "New description",
+      points: 100,
+      startshort: "2999-01-01",
+      dueshort: "2999-12-31",
+      untilshort: "2999-12-31",
+      course: cid,
+    };
+
+  const [newFlag,setNewFlag] = useState<boolean>(assignments.filter((assignment: any) => assignment._id === aid)[0] === undefined);
+
+  const [assignment, setAssignment] = useState<any>(initialState);
+
   return (
     <div id="wd-assignments-editor" className="d-flex flex-column">
         <label htmlFor="wd-name">Assignment Name</label>
-        <input id="wd-name" value={assignment.title} className="form-control mb-3"/>
-        <textarea id="wd-description" className="form-control mb-3">
-          {assignment.description}
-        </textarea>
+        <input id="wd-name" defaultValue={assignment.title} onChange={(e) => setAssignment({ ...assignment, title: e.target.value })} className="form-control mb-3"/>
+        <textarea id="wd-description" className="form-control mb-3" defaultValue={assignment.description} onChange={(e) => setAssignment({ ...assignment, description: e.target.value })}></textarea>
         <div className="d-flex mb-3">
           <label htmlFor="wd-points" className="align-content-center text-end pe-3" style={{width:"200px"}}>Points</label>
-          <input id="wd-points" value={assignment.points} className="form-control" />
+          <input id="wd-points" defaultValue={assignment.points} onChange={(e) => setAssignment({ ...assignment, points: parseInt(e.target.value) })} className="form-control" />
         </div>
         <div className="d-flex mb-3">
           <label htmlFor="wd-group" className="align-content-center text-end pe-3" style={{width:"200px"}}>Assignment Group</label>
@@ -82,25 +97,34 @@ export default function AssignmentEditor() {
             <div className="f-flex flex-column mb-3">
               <label htmlFor="wd-due-date">Due</label>
               <input id="wd-due-date" type="date"
-                defaultValue={assignment.dueshort} className="form-control"/>
+                defaultValue={assignment.dueshort} onChange={(e) => setAssignment({ ...assignment, dueshort: e.target.value })} className="form-control"/>
             </div>
             <div className="d-flex mb-3">
                 <div className="d-flex flex-column me-1 w-50">
                   <label htmlFor="wd-available-from">Available from</label>
                   <input id="wd-available-from" type="date"
-                    defaultValue={assignment.startshort} className="form-control"/>
+                    defaultValue={assignment.startshort} onChange={(e) => setAssignment({ ...assignment, startshort: e.target.value })} className="form-control"/>
                 </div>
               <div className="d-flex flex-column w-50">
                 <label htmlFor="wd-available-until">Until</label>
                 <input id="wd-available-until" type="date"
-                  defaultValue={assignment.untilshort} className="form-control"/>
+                  defaultValue={assignment.untilshort} onChange={(e) => setAssignment({ ...assignment, untilshort: e.target.value })} className="form-control"/>
               </div>
             </div>
           </div>
         </div>
         <hr/>
         <div>
-          <Link id="wd-save" type="button" className="btn btn-lg btn-danger float-end ms-1" to={"/Kanbas/Courses/"+ cid +"/Assignments"}> Save </Link>
+          <Link id="wd-save" type="button" onClick={() =>     {                  
+                    if(newFlag) 
+                      dispatch(
+                        addAssignment({ ...assignment})
+                      )
+                    else
+                    dispatch(
+                      updateAssignment({ ...assignment})
+                    )}
+                    } className="btn btn-lg btn-danger float-end ms-1" to={"/Kanbas/Courses/"+ cid +"/Assignments"}> Save </Link>
           <Link id="wd-cancel" type="button" className="btn btn-lg btn-secondary float-end" to={"/Kanbas/Courses/"+ cid +"/Assignments"}> Cancel </Link> 
         </div>
   </div>

@@ -4,24 +4,26 @@ import { LiaClipboardListSolid } from "react-icons/lia";
 import { BsGripVertical } from "react-icons/bs";
 import GroupControlButtons from "./GroupControlButtons";
 import AssignmentControlButtons from "./AssignmentControlButtons";
-import * as db from "../../Database";
 import { useParams } from "react-router";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
+import { deleteAssignment } from "./reducer";
 
 
 export default function Assignments() {
     const { cid } = useParams();
     const { currentUser } = useSelector((state: any) => state.accountReducer);
-    // {currentUser.role === "FACULTY" && (<div></div>)}
-    const assignments = db.assignments;
+    const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+    const dispatch = useDispatch();
+
     return (
       <div id="wd-assignments">
         {currentUser.role === "FACULTY" && (<div>
         <div className="display-flex align-items-center align-content-center" style={{height:"120px"}}>
-          <button id="wd-add-assignment" className="btn btn-lg btn-danger m-2 float-end"
-            type="button">
+          <Link id="wd-add-assignment" className="btn btn-lg btn-danger m-2 float-end"
+            type="button" to={new Date().getTime().toString()}>
             + Assignment
-          </button>
+          </Link>
           <button id="wd-add-group" className="btn btn-lg btn-secondary m-2 float-end"
             type="button">
             + Group
@@ -70,12 +72,14 @@ export default function Assignments() {
                       href={"#/Kanbas/Courses/"+cid+"/Assignments/"+assignment._id}>
                       {assignment.title}
                     </a>
-                    <div className="fs-6"> 
-                      <div className="d-inline text-danger">Multiple Modules</div> | <b>Not available until</b> {assignment.start} | <b>Due</b> {assignment.due} | {assignment.points} pts
+                    <div className="fs-6">
+                    <div className="d-inline text-danger">Multiple Modules</div> | <b>Not available until</b> {(new Date(assignment.startshort)).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 12:00 AM | <b>Due</b> {(new Date(assignment.dueshort)).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 11:59 pm | {assignment.points} pts
                     </div>
                   </div>
                   <div className="ms-auto">
-                    <AssignmentControlButtons /> 
+                    <AssignmentControlButtons deleteAssignment={() => {
+                      dispatch(deleteAssignment({ assignmentId: assignment._id }));
+                    }} /> 
                   </div>
                 </li>
                 ))
@@ -91,7 +95,8 @@ export default function Assignments() {
                       {assignment.title}
                     </a>
                     <div className="fs-6"> 
-                      <div className="d-inline text-danger">Multiple Modules</div> | <b>Not available until</b> {assignment.start} | <b>Due</b> {assignment.due} | {assignment.points} pts
+                    
+                      <div className="d-inline text-danger">Multiple Modules</div> | <b>Not available until</b> {(new Date(assignment.startshort)).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 12:00 AM | <b>Due</b> {(new Date(assignment.dueshort)).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 11:59 pm | {assignment.points} pts
                     </div>
                   </div>
                 </li>
