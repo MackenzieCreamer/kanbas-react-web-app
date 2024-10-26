@@ -8,12 +8,15 @@ import { useParams } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { deleteAssignment } from "./reducer";
+import { useState } from "react";
 
 
 export default function Assignments() {
     const { cid } = useParams();
     const { currentUser } = useSelector((state: any) => state.accountReducer);
     const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+    const [assignmentId, setAssignmentId] = useState("");
+    const [assignmentTitle, setAssignmentTitle] = useState("");
     const dispatch = useDispatch();
 
     return (
@@ -77,9 +80,15 @@ export default function Assignments() {
                     </div>
                   </div>
                   <div className="ms-auto">
-                    <AssignmentControlButtons deleteAssignment={() => {
-                      dispatch(deleteAssignment({ assignmentId: assignment._id }));
-                    }} /> 
+                    <AssignmentControlButtons
+                     setAssignmentId={setAssignmentId}
+                     assignmentId={assignment._id}
+                     deleteAssignment={() => {
+                      dispatch(deleteAssignment(assignmentId));
+                    }}  setAssignmentTitle={setAssignmentTitle}
+                    assignmentTitle={assignment.title}
+                    titleState = {assignmentTitle}
+                    /> 
                   </div>
                 </li>
                 ))

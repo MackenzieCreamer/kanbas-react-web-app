@@ -21,7 +21,7 @@ export default function AssignmentEditor() {
       course: cid,
     };
 
-  const [newFlag,setNewFlag] = useState<boolean>(assignments.filter((assignment: any) => assignment._id === aid)[0] === undefined);
+  const newFlag = assignments.filter((assignment: any) => assignment._id === aid)[0] === undefined;
 
   const [assignment, setAssignment] = useState<any>(initialState);
 
