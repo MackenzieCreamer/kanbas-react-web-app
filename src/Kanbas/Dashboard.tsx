@@ -1,19 +1,24 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import * as db from "./Database";
+import { useDispatch, useSelector } from "react-redux";
+import { addEnrollment, deleteEnrollment } from "./Courses/reducer";
+
 export default function Dashboard(
   { courses, course, setCourse, addNewCourse,
-    deleteCourse, updateCourse }: {
+    deleteCourse, updateCourse}: {
     courses: any[]; course: any; setCourse: (course: any) => void;
     addNewCourse: () => void; deleteCourse: (course: any) => void;
-    updateCourse: () => void; }) {
+    updateCourse: () => void;}) {
       const { currentUser } = useSelector((state: any) => state.accountReducer);
-      const { enrollments } = db;
-  
+      const { enrollments } = useSelector((state: any) => state.enrollmentsReducer);
+  const [viewAll,setViewAll] = useState(false)
+  const dispatch = useDispatch();
+
   return (
     <div id="wd-dashboard">
-      <h1 id="wd-dashboard-title">Dashboard</h1> <hr />
+      <h1 id="wd-dashboard-title" className="d-inline">Dashboard</h1>
+      {currentUser.role === "STUDENT" && <button className="float-end btn btn-primary" onClick={() => setViewAll(!viewAll)}>Enrollments</button> }
+      <hr />
       {currentUser.role === "FACULTY" && (<div><h5>New Course
           <button className="btn btn-primary float-end"
                   id="wd-add-new-course-click"
@@ -36,16 +41,17 @@ export default function Dashboard(
         {courses
         .filter((course) =>
           enrollments.some(
-            (enrollment) =>
-              enrollment.user === currentUser._id &&
-              enrollment.course === course._id
-             ))    
+            (enrollment: any) =>
+              (enrollment.user === currentUser._id &&
+              enrollment.course === course._id) 
+             ) || currentUser.role === "FACULTY" || viewAll
+            )    
         .map((course) => (
           <div className="wd-dashboard-course col" style={{ width: "300px" }}>
               <div className="card rounded-3 overflow-hidden">
                 <Link to={`/Kanbas/Courses/${course._id}/Home`}
                       className="wd-dashboard-course-link text-decoration-none text-dark" >
-                  <img src={course.image} width="100%" height={160} />
+                  <img src={course.image} alt="Potential course" width="100%" height={160} />
                   <div className="card-body">
                     <span className="wd-dashboard-course-title card-title text-primary fw-bold">
                       {course.name}
@@ -70,6 +76,22 @@ export default function Dashboard(
                       className="btn btn-warning me-2 float-end" >
                       Edit
                     </button></div>)}
+                    { currentUser.role === "STUDENT" && enrollments.filter((m: any) => m.user === currentUser._id && m.course === course._id).length !== 0
+                     && <button id="wd-enroll-course-click"
+                      onClick={(event) => {
+                        dispatch(deleteEnrollment([course._id, currentUser._id]));
+                        event.preventDefault();}} 
+                        className={`btn float-end me-2 btn-danger`}>
+                           Unenroll
+                      </button>}
+                    { currentUser.role === "STUDENT" && enrollments.filter((m: any) => m.user === currentUser._id && m.course === course._id).length === 0
+                     && <button id="wd-enroll-course-click"
+                      onClick={(event) => {
+                        dispatch(addEnrollment([course._id, currentUser._id]));
+                        event.preventDefault();}} 
+                        className={`btn float-end me-2 btn-success`}>
+                           Enroll
+                      </button>}
                     {currentUser.role !== "FACULTY" && (<div>
                       <button className="btn btn-primary"> Go </button></div>)}
                   </div>
