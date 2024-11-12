@@ -39,13 +39,13 @@ export default function Dashboard(
       <div id="wd-dashboard-courses" className="row">
         <div className="row row-cols-1 row-cols-md-5 g-4">
         {courses
-        .filter((course) =>
-          enrollments.some(
-            (enrollment: any) =>
-              (enrollment.user === currentUser._id &&
-              enrollment.course === course._id) 
-             ) || currentUser.role === "FACULTY" || viewAll
-            )    
+        // .filter((course) =>
+        //   enrollments.some(
+        //     (enrollment: any) =>
+        //       (enrollment.user === currentUser._id &&
+        //       enrollment.course === course._id) 
+        //      ) || currentUser.role === "FACULTY" || viewAll
+        //     )    
         .map((course) => (
           <div className="wd-dashboard-course col" style={{ width: "300px" }}>
               <div className="card rounded-3 overflow-hidden">
