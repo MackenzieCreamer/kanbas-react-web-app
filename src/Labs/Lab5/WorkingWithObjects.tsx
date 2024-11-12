@@ -35,19 +35,22 @@ export default function WorkingWithObjects() {
         <input type="number" className="form-control w-75" id="wd-assignment-score"
             defaultValue={assignment.score} onChange={(e) =>
             setAssignment({ ...assignment, score: parseInt(e.target.value) })}/>
-        <hr />
         <br />
+        <hr />
         <a id="wd-update-assignment-completed"
             className="btn btn-primary float-end"
             href={`${ASSIGNMENT_API_URL}/completed/${assignment.completed}`}>
             Update Completed
         </a>
-        <div className="form-group">
-            <label htmlFor="wd-assignment-completed">Completed</label>
-            <input className="ms-1" type="checkbox" id="wd-assignment-completed"
-            defaultChecked={assignment.completed} onChange={(e) =>
-            setAssignment({ ...assignment, completed: e.target.checked })}/>
+        <div className="form-control-sm">
+            <div className="form-check form-check-inline">
+                <input className="form-check-input" type="checkbox" id="wd-assignment-completed"
+                defaultChecked={assignment.completed} onChange={(e) =>
+                setAssignment({ ...assignment, completed: e.target.checked })}/>
+                <label className="form-check-label" htmlFor="wd-assignment-completed">Completed</label>
+            </div>
         </div>
+        <br />
         <hr />
 
         <h4>Retrieving Objects</h4>
