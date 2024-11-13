@@ -22,7 +22,6 @@ export default function Assignments() {
     const fetchAssignments = async () => {
       const assignments = await coursesClient.findAssignmentsForCourse(cid as string);
       dispatch(setAssignments(assignments));
-      console.log(assignments)
     };
     useEffect(() => {
       fetchAssignments();
@@ -31,6 +30,7 @@ export default function Assignments() {
       await assignmentsClient.deleteAssignment(assignmentId);
       dispatch(deleteAssignment(assignmentId));
     };
+  
   
 
     return (
@@ -90,7 +90,7 @@ export default function Assignments() {
                       {assignment.title}
                     </a>
                     <div className="fs-6">
-                    <div className="d-inline text-danger">Multiple Modules</div> | <b>Not available until</b> {(new Date(assignment.startshort)).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 12:00 AM | <b>Due</b> {(new Date(assignment.dueshort)).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 11:59 pm | {assignment.points} pts
+                    <div className="d-inline text-danger">Multiple Modules</div> | <b>Not available until</b> {(new Date((assignment.startshort).replace(/-/g, '\/'))).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 12:00 AM | <b>Due</b> {(new Date(assignment.dueshort.replace(/-/g, '\/'))).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 11:59 pm | {assignment.points} pts
                     </div>
                   </div>
                   <div className="ms-auto">
@@ -119,7 +119,7 @@ export default function Assignments() {
                     </a>
                     <div className="fs-6"> 
                     
-                      <div className="d-inline text-danger">Multiple Modules</div> | <b>Not available until</b> {(new Date(assignment.startshort)).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 12:00 AM | <b>Due</b> {(new Date(assignment.dueshort)).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 11:59 pm | {assignment.points} pts
+                      <div className="d-inline text-danger">Multiple Modules</div> | <b>Not available until</b> {(new Date((assignment.startshort).replace(/-/g, '\/'))).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 12:00 AM | <b>Due</b> {(new Date(assignment.dueshort.replace(/-/g, '\/'))).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 11:59 pm | {assignment.points} pts
                     </div>
                   </div>
                 </li>
