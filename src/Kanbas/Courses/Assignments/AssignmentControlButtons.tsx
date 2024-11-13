@@ -8,7 +8,7 @@ export default function AssignmentControlButtons({assignmentId,setAssignmentId,d
       <GreenCheckmark />
       <IoEllipsisVertical className="fs-4" />
       <button data-bs-toggle="modal" data-bs-target="#wd-delete-assignment-dialog" 
-      id="wd-delete-assignment-btn" className="btn btn-lg btn-danger me-1 float-end" onClick={() => {setAssignmentId(assignmentId);setAssignmentTitle(assignmentTitle);console.log(assignmentTitle)}}>Delete</button>
+      id="wd-delete-assignment-btn" className="btn btn-lg btn-danger me-1 float-end" onClick={() => {setAssignmentId(assignmentId);setAssignmentTitle(assignmentTitle);}}>Delete</button>
       <AssignmentDeleter dialogTitle="Delete Assignment" dialogDescription={"Are you sure you want to delete \"" + titleState + "\"?"}
                     assignmentId={assignmentId} deleteAssignment={deleteAssignment} setAssignmentId={setAssignmentId}/>
     </div>

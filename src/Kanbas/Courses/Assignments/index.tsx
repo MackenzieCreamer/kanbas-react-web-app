@@ -7,9 +7,10 @@ import AssignmentControlButtons from "./AssignmentControlButtons";
 import { useParams } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { deleteAssignment } from "./reducer";
-import { useState } from "react";
-
+import { deleteAssignment, setAssignments } from "./reducer";
+import { useEffect, useState } from "react";
+import * as coursesClient from "../client";
+import * as assignmentsClient from "./client"
 
 export default function Assignments() {
     const { cid } = useParams();
@@ -18,6 +19,19 @@ export default function Assignments() {
     const [assignmentId, setAssignmentId] = useState("");
     const [assignmentTitle, setAssignmentTitle] = useState("");
     const dispatch = useDispatch();
+    const fetchAssignments = async () => {
+      const assignments = await coursesClient.findAssignmentsForCourse(cid as string);
+      dispatch(setAssignments(assignments));
+      console.log(assignments)
+    };
+    useEffect(() => {
+      fetchAssignments();
+    }, []);
+    const removeAssignment = async (assignmentId: string) => {
+      await assignmentsClient.deleteAssignment(assignmentId);
+      dispatch(deleteAssignment(assignmentId));
+    };
+  
 
     return (
       <div id="wd-assignments">
@@ -84,7 +98,7 @@ export default function Assignments() {
                      setAssignmentId={setAssignmentId}
                      assignmentId={assignment._id}
                      deleteAssignment={() => {
-                      dispatch(deleteAssignment(assignmentId));
+                      removeAssignment(assignmentId)
                     }}  setAssignmentTitle={setAssignmentTitle}
                     assignmentTitle={assignment.title}
                     titleState = {assignmentTitle}
