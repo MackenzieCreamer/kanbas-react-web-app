@@ -17,6 +17,7 @@ import * as courseClient from "./Courses/client";
 
 export default function Kanbas() {
     const [courses, setCourses] = useState<any[]>([]);
+    const [allCourses, setAllCourses] = useState<any[]>([]);
     const { currentUser } = useSelector((state: any) => state.accountReducer);
     const fetchCourses = async () => {
       let courses = [];
@@ -27,8 +28,18 @@ export default function Kanbas() {
       }
       setCourses(courses);
     };
+    const fetchAllCourses = async () => {
+        let allCourses = [];
+        try {
+            allCourses = await courseClient.fetchAllCourses();
+        } catch (error) {
+          console.error(error);
+        }
+        setAllCourses(allCourses);
+    };
     useEffect(() => {
       fetchCourses();
+      fetchAllCourses();
     }, [currentUser]);
   
     const [course, setCourse] = useState<any>({
@@ -38,10 +49,12 @@ export default function Kanbas() {
     const addNewCourse = async () => {
         const newCourse = await userClient.createCourse(course);
         setCourses([...courses, newCourse]);
+        setAllCourses([...allCourses, newCourse]);
     };
     const deleteCourse = async (courseId: any) => {
         const status = await courseClient.deleteCourse(courseId);
         setCourses(courses.filter((course) => course._id !== courseId));
+        setAllCourses(allCourses.filter((course) => course._id !== courseId));
     };
     const updateCourse =  async () => {
         await courseClient.updateCourse(course);
@@ -54,7 +67,20 @@ export default function Kanbas() {
             }
         })
         );
+        setAllCourses(
+            allCourses.map((c) => {
+                if (c._id === course._id) {
+                return course;
+                } else {
+                return c;
+                }
+            })
+        );
     };
+    const updateCourseLists = async () => {
+        fetchCourses();
+        fetchAllCourses();
+    }
   
     return (
         <Session>
@@ -67,11 +93,13 @@ export default function Kanbas() {
                         <Route path="/Dashboard" element={<ProtectedRoute>
                             <Dashboard
                             courses={courses}
+                            allCourses={allCourses}
                             course={course}
                             setCourse={setCourse}
                             addNewCourse={addNewCourse}
                             deleteCourse={deleteCourse}
-                            updateCourse={updateCourse}/> </ProtectedRoute>         
+                            updateCourse={updateCourse}
+                            updateCourseLists={updateCourseLists}/> </ProtectedRoute>         
                         } />
                         <Route path="/Courses/:cid/*" element={<EnrollmentProtection><ProtectedRoute><Courses courses={courses}/></ProtectedRoute></EnrollmentProtection>} />
                         <Route path="/Calendar" element={<h1>Calendar</h1>} />
