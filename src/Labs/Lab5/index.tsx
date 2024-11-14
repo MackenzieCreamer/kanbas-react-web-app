@@ -9,6 +9,7 @@ import WorkingWithObjectsAsynchronously from "./WorkingWithObjectsAsynchronously
 const REMOTE_SERVER = process.env.REACT_APP_REMOTE_SERVER;
 
 export default function Lab5() {
+  console.log(process.env)
     return (
       <div id="wd-lab5">
         <h2>Lab 5</h2>
