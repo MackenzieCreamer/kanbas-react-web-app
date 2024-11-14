@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 // import { addEnrollment, deleteEnrollment } from "./Courses/reducer";
 import * as usersClient from "./Account/client"
 
@@ -12,7 +12,6 @@ export default function Dashboard(
     updateCourse: () => void; updateCourseLists: ()=>void;}) {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const [viewAll, setViewAll] = useState(false)
-  const dispatch = useDispatch();
 
   const enrollForCourse = async (course: any) => {
     await usersClient.enrollForCourse(course);
@@ -65,8 +64,8 @@ export default function Dashboard(
                     {currentUser.role === "FACULTY" && (<div>
                       <button className="btn btn-primary"> Go </button>
                     <button onClick={(event) => {
-                        event.preventDefault();
                         deleteCourse(course._id);
+                        event.preventDefault();
                       }} className="btn btn-danger float-end"
                       id="wd-delete-course-click">
                       Delete
@@ -79,7 +78,7 @@ export default function Dashboard(
                       className="btn btn-warning me-2 float-end" >
                       Edit
                     </button></div>)}
-                    { currentUser.role === "STUDENT" && courses.some((compareCourse) => {return (compareCourse._id == course._id)})
+                    { currentUser.role === "STUDENT" && courses.some((compareCourse) => {return (compareCourse._id === course._id)})
                      && <button id="wd-enroll-course-click"
                       onClick={(event) => {
                         unenrollFromCourse(course);
@@ -87,7 +86,7 @@ export default function Dashboard(
                         className={`btn float-end me-2 btn-danger`}>
                            Unenroll
                       </button>}
-                    { currentUser.role === "STUDENT" && !courses.some((compareCourse) => {return (compareCourse._id == course._id)})
+                    { currentUser.role === "STUDENT" && !courses.some((compareCourse) => {return (compareCourse._id === course._id)})
                      && <button id="wd-enroll-course-click"
                       onClick={(event) => {
                         enrollForCourse(course);
@@ -119,8 +118,8 @@ export default function Dashboard(
                   {currentUser.role === "FACULTY" && (<div>
                     <button className="btn btn-primary"> Go </button>
                   <button onClick={(event) => {
-                      event.preventDefault();
                       deleteCourse(course._id);
+                      event.preventDefault();
                     }} className="btn btn-danger float-end"
                     id="wd-delete-course-click">
                     Delete
@@ -133,7 +132,7 @@ export default function Dashboard(
                     className="btn btn-warning me-2 float-end" >
                     Edit
                   </button></div>)}
-                  { currentUser.role === "STUDENT" && courses.some((compareCourse) => {return (compareCourse._id == course._id)})
+                  { currentUser.role === "STUDENT" && courses.some((compareCourse) => {return (compareCourse._id === course._id)})
                     && <button id="wd-enroll-course-click"
                     onClick={(event) => {
                       unenrollFromCourse(course);
@@ -141,7 +140,7 @@ export default function Dashboard(
                       className={`btn float-end me-2 btn-danger`}>
                           Unenroll
                     </button>}
-                  { currentUser.role === "STUDENT" && !courses.some((compareCourse) => {return (compareCourse._id == course._id)})
+                  { currentUser.role === "STUDENT" && !courses.some((compareCourse) => {return (compareCourse._id === course._id)})
                     && <button id="wd-enroll-course-click"
                     onClick={(event) => {
                       enrollForCourse(course);
