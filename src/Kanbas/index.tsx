@@ -80,6 +80,8 @@ export default function Kanbas() {
         fetchCourses();
         fetchAllCourses();
     }
+
+    console.log(courses)
   
     return (
         <Session>
@@ -100,7 +102,7 @@ export default function Kanbas() {
                             updateCourse={updateCourse}
                             updateCourseLists={updateCourseLists}/> </ProtectedRoute>         
                         } />
-                        <Route path="/Courses/:cid/*" element={<EnrollmentProtection><ProtectedRoute><Courses courses={courses}/></ProtectedRoute></EnrollmentProtection>} />
+                        <Route path="/Courses/:cid/*" element={<EnrollmentProtection enrolledCourses={courses}><ProtectedRoute><Courses courses={allCourses}/></ProtectedRoute></EnrollmentProtection>} />
                         <Route path="/Calendar" element={<h1>Calendar</h1>} />
                         <Route path="/Inbox" element={<h1>Inbox</h1>} />
                     </Routes>

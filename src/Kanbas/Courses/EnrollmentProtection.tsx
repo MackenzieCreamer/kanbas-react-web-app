@@ -1,10 +1,10 @@
 import { useSelector } from "react-redux";
 import { Navigate, useParams } from "react-router-dom";
-export default function EnrollmentProtection({ children }: { children: any }) {
+export default function EnrollmentProtection({ children, enrolledCourses }: { children: any, enrolledCourses : any[] }) {
+  console.log(children)
   const { currentUser } = useSelector((state: any) => state.accountReducer);
-  const { enrollments } = useSelector((state: any) => state.enrollmentsReducer);
   const { cid } = useParams();
-  if (currentUser.role === "FACULTY" || enrollments.filter((m: any) => m.user === currentUser._id && m.course === cid).length !== 0) {
+  if (currentUser.role === "FACULTY" || enrolledCourses.some((compareCourse) => {return (compareCourse._id === cid)})) {
     return children;
   } else {
     return <Navigate to="/Kanbas/Dashboard" />;
