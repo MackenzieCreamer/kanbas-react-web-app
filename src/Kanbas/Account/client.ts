@@ -5,6 +5,7 @@ const axiosWithCredentials = axios.create({ withCredentials: true });
 
 export const signin = async (credentials: any) => {
   const response = await axiosWithCredentials.post( `${USERS_API}/signin`, credentials );
+  console.log(response)
   return response.data;
 };
 export const profile = async () => {
