@@ -81,10 +81,7 @@ export default function Kanbas() {
     const updateCourseLists = async () => {
         fetchCourses();
         fetchAllCourses();
-    }
-
-    console.log(courses)
-  
+    }  
     return (
         <Session>
             <div id="wd-kanbas">
