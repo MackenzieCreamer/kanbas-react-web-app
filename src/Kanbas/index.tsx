@@ -55,7 +55,7 @@ export default function Kanbas() {
               if (enrolledCourses.find((c: any) => c._id === course._id)) {
                 return { ...course, enrolled: true };
               } else {
-                return course;
+                return { ...course, enrolled: false };
               }
             });
             setCourses(courses);
@@ -117,7 +117,7 @@ export default function Kanbas() {
                             setEnrolling={setEnrolling}
                             updateEnrollment={updateEnrollment}/> </ProtectedRoute>         
                         } />
-                        <Route path="/Courses/:cid/*" element={<EnrollmentProtection enrolledCourses={courses}><ProtectedRoute><Courses courses={courses}/></ProtectedRoute></EnrollmentProtection>} />
+                        <Route path="/Courses/:cid/*" element={<EnrollmentProtection courses={courses} enrolling={enrolling}><ProtectedRoute><Courses courses={courses}/></ProtectedRoute></EnrollmentProtection>} />
                         <Route path="/Calendar" element={<h1>Calendar</h1>} />
                         <Route path="/Inbox" element={<h1>Inbox</h1>} />
                     </Routes>

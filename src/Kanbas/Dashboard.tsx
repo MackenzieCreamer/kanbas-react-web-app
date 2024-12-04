@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 // import { addEnrollment, deleteEnrollment } from "./Courses/reducer";
 import * as usersClient from "./Account/client"
+import { current } from "@reduxjs/toolkit";
 
 export default function Dashboard(
   { courses, course, setCourse, addNewCourse,
@@ -16,11 +17,11 @@ export default function Dashboard(
   return (
     <div id="wd-dashboard">
       <h1 id="wd-dashboard-title" className="d-inline">Dashboard</h1>
-      <button onClick={() => setEnrolling(!enrolling)} className="float-end btn btn-primary" >
+      {currentUser.role !== "ADMIN" && <button onClick={() => setEnrolling(!enrolling)} className="float-end btn btn-primary" >
           {enrolling ? "My Courses" : "All Courses"}
-        </button>
+        </button>}
       <hr />
-      {currentUser.role === "FACULTY" && (<div><h5>New Course
+      {(currentUser.role === "FACULTY" || currentUser.role === "ADMIN") && (<div><h5>New Course
           <button className="btn btn-primary float-end"
                   id="wd-add-new-course-click"
                   onClick={addNewCourse} > Add </button>
@@ -51,7 +52,7 @@ export default function Dashboard(
                       <span className="wd-dashboard-course-title card-title overflow-hidden text-primary text-truncate fw-bold me-3">
                         {course.name}
                       </span>
-                      {enrolling && (
+                      {enrolling && currentUser.role !== "ADMIN" && (
                           <button  onClick={(event) => {
                             event.preventDefault();
                             updateEnrollment(course._id, !course.enrolled);
@@ -64,7 +65,7 @@ export default function Dashboard(
                     <p className="wd-dashboard-course-title card-text overflow-hidden" style={{ maxHeight: "100px" }}>
                       {course.description}
                     </p>                      
-                    {currentUser.role === "FACULTY" && (<div>
+                    {(currentUser.role === "ADMIN" || currentUser.role === "FACULTY") && (<div>
                       <button className="btn btn-primary"> Go </button>
                     <button onClick={(event) => {
                         deleteCourse(course._id);
@@ -81,67 +82,13 @@ export default function Dashboard(
                       className="btn btn-warning me-2 float-end" >
                       Edit
                     </button></div>)}
-                    {currentUser.role !== "FACULTY" && (<div>
+                    {(currentUser.role !== "FACULTY" && currentUser.role !== "ADMIN") && (<div>
                       <button className="btn btn-primary"> Go </button></div>)}
                   </div>
                 </Link>
               </div>
             </div>
           ))}
-        {/* {viewAll && allCourses  
-        .map((course) => (
-        <div className="wd-dashboard-course col" style={{ width: "300px" }}>
-            <div className="card rounded-3 overflow-hidden">
-              <Link to={`/Kanbas/Courses/${course._id}/Home`}
-                    className="wd-dashboard-course-link text-decoration-none text-dark" >
-                <img src={course.image} alt="Potential course" width="100%" height={160} />
-                <div className="card-body">
-                  <span className="wd-dashboard-course-title card-title text-primary fw-bold">
-                    {course.name}
-                  </span>
-                  <p className="wd-dashboard-course-title card-text overflow-hidden" style={{ maxHeight: "100px" }}>
-                    {course.description}
-                  </p>                      
-                  {currentUser.role === "FACULTY" && (<div>
-                    <button className="btn btn-primary"> Go </button>
-                  <button onClick={(event) => {
-                      deleteCourse(course._id);
-                      event.preventDefault();
-                    }} className="btn btn-danger float-end"
-                    id="wd-delete-course-click">
-                    Delete
-                  </button>
-                  <button id="wd-edit-course-click"
-                    onClick={(event) => {
-                      setCourse(course);
-                      event.preventDefault();
-                    }}
-                    className="btn btn-warning me-2 float-end" >
-                    Edit
-                  </button></div>)}
-                  { currentUser.role === "STUDENT" && courses.some((compareCourse) => {return (compareCourse._id === course._id)})
-                    && <button id="wd-enroll-course-click"
-                    onClick={(event) => {
-                      unenrollFromCourse(course);
-                      event.preventDefault();}} 
-                      className={`btn float-end me-2 btn-danger`}>
-                          Unenroll
-                    </button>}
-                  { currentUser.role === "STUDENT" && !courses.some((compareCourse) => {return (compareCourse._id === course._id)})
-                    && <button id="wd-enroll-course-click"
-                    onClick={(event) => {
-                      enrollForCourse(course);
-                      event.preventDefault();}} 
-                      className={`btn float-end me-2 btn-success`}>
-                          Enroll
-                    </button>}
-                  {currentUser.role !== "FACULTY" && (<div>
-                    <button className="btn btn-primary"> Go </button></div>)}
-                </div>
-              </Link>
-            </div>
-          </div>
-        ))} */}
         </div>
       </div>
     </div>

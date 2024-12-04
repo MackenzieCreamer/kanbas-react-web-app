@@ -35,7 +35,7 @@ export default function Assignments() {
 
     return (
       <div id="wd-assignments">
-        {currentUser.role === "FACULTY" && (<div>
+        {(currentUser.role ==="FACULTY" || currentUser.role ==="ADMIN") && (<div>
         <div className="display-flex align-items-center align-content-center" style={{height:"120px"}}>
           <Link id="wd-add-assignment" className="btn btn-lg btn-danger m-2 float-end"
             type="button" to={new Date().getTime().toString()}>
@@ -53,7 +53,7 @@ export default function Assignments() {
           </div>
         </div>
         </div>)}
-        {currentUser.role !== "FACULTY" && (<div>
+        {(currentUser.role !=="FACULTY" && currentUser.role !=="ADMIN") && (<div>
           <div className="d-flex flex-fill position-relative m-2" style={{height:"48px"}}>
             <label htmlFor="wd-search-assignment"><FaMagnifyingGlass className="position-absolute top-50 translate-middle ms-4 text-secondary"/></label>
             <input className="form-control ps-5" id="wd-search-assignment"
@@ -62,27 +62,19 @@ export default function Assignments() {
         </div>)}
         <ul id="wd-assignment-list" className="list-group rounded-0">
           <li className="wd-assignment-list-item list-group-item p-0 mb-5 fs-5 border-gray">
-            {currentUser.role === "FACULTY" && 
             <div className="wd-group-title d-flex p-3 ps-2 bg-secondary">
-              <BsGripVertical className="me-2 fs-3" />
+              {currentUser.role === "FACULTY" && <BsGripVertical className="me-2 fs-3" />}
               <FaCaretDown className="me-1 fs-3"/>
               <div>ASSIGNMENTS</div>
               <div className="ms-auto bg-light ps-2 pe-2 me-1 rounded-pill">40% of Total</div>
               <GroupControlButtons />
-            </div>}
-            {currentUser.role !== "FACULTY" && 
-            <div className="wd-group-title d-flex p-3 ps-2 bg-secondary">
-              <FaCaretDown className="me-1 fs-3"/>
-              <div>ASSIGNMENTS</div>
-              <div className="ms-auto bg-light ps-2 pe-2 me-1 rounded-pill">40% of Total</div>
-            </div>}
+            </div>
             <ul className="wd-assignments list-group rounded-0 border-start border-success border-5">
-              {currentUser.role === "FACULTY" && assignments
-                .filter((assignment: any) => assignment.course === cid)
+              {assignments
                 .map((assignment: any) => (
                   
                   <li className="wd-assignment list-group-item p-3 ps-1 d-flex align-items-center">
-                  <BsGripVertical className="me-2 fs-3" />
+                  {(currentUser.role ==="FACULTY" || currentUser.role ==="ADMIN") && <BsGripVertical className="me-2 fs-3" />}
                   <LiaClipboardListSolid className="me-2 fs-3 text-success"/>
                   <div className="d-flex flex-column align-content-center w-75">
                     <a className="wd-assignment-link text-decoration-none text-dark fw-bold"
@@ -90,10 +82,10 @@ export default function Assignments() {
                       {assignment.title}
                     </a>
                     <div className="fs-6">
-                    <div className="d-inline text-danger">Multiple Modules</div> | <b>Not available until</b> {(new Date((assignment.startshort).replace(/-/g, '\/'))).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 12:00 AM | <b>Due</b> {(new Date(assignment.dueshort.replace(/-/g, '\/'))).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 11:59 pm | {assignment.points} pts
+                    <div className="d-inline text-danger">Multiple Modules</div> | <b>Not available until</b> {(new Date((assignment.startshort.substring(0,10)).replace(/-/g, '\/'))).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 12:00 AM | <b>Due</b> {(new Date(assignment.dueshort.substring(0,10).replace(/-/g, '\/'))).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 11:59 pm | {assignment.points} pts
                     </div>
                   </div>
-                  <div className="ms-auto">
+                  {(currentUser.role ==="FACULTY" || currentUser.role ==="ADMIN") && <div className="ms-auto">
                     <AssignmentControlButtons
                      setAssignmentId={setAssignmentId}
                      assignmentId={assignment._id}
@@ -103,25 +95,7 @@ export default function Assignments() {
                     assignmentTitle={assignment.title}
                     titleState = {assignmentTitle}
                     /> 
-                  </div>
-                </li>
-                ))
-              }
-              {currentUser.role !=="FACULTY" && assignments
-                .filter((assignment: any) => assignment.course === cid)
-                .map((assignment: any) => (
-                  <li className="wd-assignment list-group-item p-3 ps-1 d-flex align-items-center">
-                  <LiaClipboardListSolid className="me-2 fs-3 text-success"/>
-                  <div className="d-flex flex-column align-content-center w-75">
-                    <a className="wd-assignment-link text-decoration-none text-dark fw-bold"
-                      href={"#/Kanbas/Courses/"+cid+"/Assignments/"+assignment._id}>
-                      {assignment.title}
-                    </a>
-                    <div className="fs-6"> 
-                    
-                      <div className="d-inline text-danger">Multiple Modules</div> | <b>Not available until</b> {(new Date((assignment.startshort).replace(/-/g, '\/'))).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 12:00 AM | <b>Due</b> {(new Date(assignment.dueshort.replace(/-/g, '\/'))).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 11:59 pm | {assignment.points} pts
-                    </div>
-                  </div>
+                  </div>}
                 </li>
                 ))
               }
