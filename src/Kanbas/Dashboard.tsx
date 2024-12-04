@@ -5,28 +5,20 @@ import { useSelector } from "react-redux";
 import * as usersClient from "./Account/client"
 
 export default function Dashboard(
-  { courses, allCourses, course, setCourse, addNewCourse,
-    deleteCourse, updateCourse, updateCourseLists}: {
-    courses: any[]; allCourses: any[]; course: any; setCourse: (course: any) => void;
+  { courses, course, setCourse, addNewCourse,
+    deleteCourse, updateCourse, enrolling, setEnrolling, updateEnrollment}: {
+    courses: any[]; course: any; setCourse: (course: any) => void;
     addNewCourse: () => void; deleteCourse: (course: any) => void;
-    updateCourse: () => void; updateCourseLists: ()=>void;}) {
+    updateCourse: () => void; enrolling: boolean; setEnrolling: (enrolling: boolean) => void;
+    updateEnrollment: (courseId: string, enrolled: boolean) => void;}) {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
-  const [viewAll, setViewAll] = useState(false)
-
-  const enrollForCourse = async (course: any) => {
-    await usersClient.enrollForCourse(course);
-    updateCourseLists();
-  };
-  const unenrollFromCourse = async (course: any) => {
-    await usersClient.unenrollFromCourse(course);
-    updateCourseLists();
-  };
 
   return (
     <div id="wd-dashboard">
       <h1 id="wd-dashboard-title" className="d-inline">Dashboard</h1>
-      {currentUser.role === "STUDENT" && <button className="float-end btn btn-primary" onClick={()=>setViewAll(!viewAll)}>Enrollments</button> }
-      {currentUser.role === "FACULTY" && <button className="float-end btn btn-primary" onClick={()=>setViewAll(!viewAll)}>Show All</button> }
+      <button onClick={() => setEnrolling(!enrolling)} className="float-end btn btn-primary" >
+          {enrolling ? "My Courses" : "All Courses"}
+        </button>
       <hr />
       {currentUser.role === "FACULTY" && (<div><h5>New Course
           <button className="btn btn-primary float-end"
@@ -42,12 +34,12 @@ export default function Dashboard(
       <textarea defaultValue={course.description} value={course.description} className="form-control"
           onChange={(e) => setCourse({ ...course, description: e.target.value }) } />
       <hr />
-      <h2 id="wd-dashboard-published">Published Courses ({!viewAll && courses.length}{viewAll && allCourses.length})</h2> <hr /></div>)}
+      <h2 id="wd-dashboard-published">Published Courses ({courses.length})</h2> <hr /></div>)}
 
       
       <div id="wd-dashboard-courses" className="row">
         <div className="row row-cols-1 row-cols-md-5 g-4">
-        {!viewAll && courses  
+        {courses  
         .map((course) => (
           <div className="wd-dashboard-course col" style={{ width: "300px" }}>
               <div className="card rounded-3 overflow-hidden">
@@ -55,9 +47,20 @@ export default function Dashboard(
                       className="wd-dashboard-course-link text-decoration-none text-dark" >
                   <img src={course.image} alt="Potential course" width="100%" height={160} />
                   <div className="card-body">
-                    <span className="wd-dashboard-course-title card-title text-primary fw-bold">
-                      {course.name}
-                    </span>
+                    <div className="d-flex justify-content-between">
+                      <span className="wd-dashboard-course-title card-title overflow-hidden text-primary text-truncate fw-bold me-3">
+                        {course.name}
+                      </span>
+                      {enrolling && (
+                          <button  onClick={(event) => {
+                            event.preventDefault();
+                            updateEnrollment(course._id, !course.enrolled);
+                            }} 
+                            className={`btn ${ course.enrolled ? "btn-danger" : "btn-success" } float-end`} >
+                            {course.enrolled ? "Unenroll" : "Enroll"}
+                          </button>
+                        )}
+                      </div>
                     <p className="wd-dashboard-course-title card-text overflow-hidden" style={{ maxHeight: "100px" }}>
                       {course.description}
                     </p>                      
@@ -78,22 +81,6 @@ export default function Dashboard(
                       className="btn btn-warning me-2 float-end" >
                       Edit
                     </button></div>)}
-                    { currentUser.role === "STUDENT" && courses.some((compareCourse) => {return (compareCourse._id === course._id)})
-                     && <button id="wd-enroll-course-click"
-                      onClick={(event) => {
-                        unenrollFromCourse(course);
-                        event.preventDefault();}} 
-                        className={`btn float-end me-2 btn-danger`}>
-                           Unenroll
-                      </button>}
-                    { currentUser.role === "STUDENT" && !courses.some((compareCourse) => {return (compareCourse._id === course._id)})
-                     && <button id="wd-enroll-course-click"
-                      onClick={(event) => {
-                        enrollForCourse(course);
-                        event.preventDefault();}} 
-                        className={`btn float-end me-2 btn-success`}>
-                           Enroll
-                      </button>}
                     {currentUser.role !== "FACULTY" && (<div>
                       <button className="btn btn-primary"> Go </button></div>)}
                   </div>
@@ -101,7 +88,7 @@ export default function Dashboard(
               </div>
             </div>
           ))}
-        {viewAll && allCourses  
+        {/* {viewAll && allCourses  
         .map((course) => (
         <div className="wd-dashboard-course col" style={{ width: "300px" }}>
             <div className="card rounded-3 overflow-hidden">
@@ -154,7 +141,7 @@ export default function Dashboard(
               </Link>
             </div>
           </div>
-        ))}
+        ))} */}
         </div>
       </div>
     </div>
