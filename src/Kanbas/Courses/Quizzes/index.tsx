@@ -7,10 +7,12 @@ import QuizControlButtons from "./QuizControlButtons";
 import { useParams } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { deleteQuiz, setQuizzes, updateQuiz } from "./reducer";
+import { addQuiz, deleteQuiz, setQuizzes, updateQuiz } from "./reducer";
 import { useEffect, useState } from "react";
 import * as coursesClient from "../client";
 import * as quizzesClient from "./client"
+import { EditorState, ContentState, convertToRaw, convertFromRaw, convertFromHTML } from 'draft-js';
+
 
 export default function Quizzes() {
     const { cid } = useParams();
@@ -26,22 +28,51 @@ export default function Quizzes() {
     useEffect(() => {
       fetchQuizzes();
     }, []);
+
+    const defaultQuiz = { 
+      title: "New Title",
+      points: 0,
+      description: convertToRaw(EditorState.createEmpty().getCurrentContent()),
+      quizType:"GRADED",
+      assignGroup:"QUIZZES",
+      shuffle:true,
+      timeLimit:0,
+      multipleAttemptsAllowed:false,
+      multipleAttempts:1,
+      showCorrect:false,
+      accessCode:"",
+      singleQuestion:true,
+      webcamRequired:false,
+      questionLock:false,
+      published:false,
+      startshort: "2999-01-01",
+      dueshort: "2999-12-31",
+      untilshort: "2999-12-31",
+      course: cid,
+     };
+
+    const createNewQuiz = async () => {
+      const newQuiz = await coursesClient.createQuizForCourse(cid as string,defaultQuiz)
+      dispatch(addQuiz(newQuiz))
+      fetchQuizzes();
+      window.location.href="#/Kanbas/Courses/"+ cid +"/Quizzes/"+newQuiz._id+"/Details"
+    }
+
     const removeQuiz = async (quizId: string) => {
       await quizzesClient.deleteQuiz(quizId);
       dispatch(deleteQuiz(quizId));
     };
     const publishQuiz = async (quiz:any[], published:boolean) => {
-      console.log(published)
       await quizzesClient.updateQuiz({...quiz,published:!published})
       dispatch(updateQuiz(quiz));
       fetchQuizzes();
     }
-  
-    const saveQuiz = async (quiz: any) => {
-      await quizzesClient.updateQuiz(quiz);
-      dispatch(updateQuiz(quiz));
-      fetchQuizzes();
-    };
+
+    const getQuestionCountForQuiz = async (quizId : string) => {
+      const status = await quizzesClient.findQuestionsForQuiz(quizId)
+      console.log(status)
+      return status.length; 
+    }
 
     const today = new Date();
   
@@ -50,10 +81,10 @@ export default function Quizzes() {
       <div id="wd-quiz">
         {(currentUser.role ==="FACULTY" || currentUser.role ==="ADMIN") && (<div>
         <div className="display-flex align-items-center align-content-center" style={{height:"120px"}}>
-          <Link id="wd-add-quiz" className="btn btn-lg btn-danger m-2 float-end"
-            type="button" to={new Date().getTime().toString() + "/edit"}>
+          <button id="wd-add-quiz" className="btn btn-lg btn-danger m-2 float-end"
+            type="button" onClick={() => createNewQuiz()} >
             + Quiz
-          </Link>
+          </button>
           <button id="wd-add-group" className="btn btn-lg btn-secondary m-2 float-end"
             type="button">
             + Group
@@ -94,7 +125,8 @@ export default function Quizzes() {
                       {quiz.title}
                     </a>
                     <div className="fs-6">
-                    <div className="d-inline text-danger">Multiple Modules</div> | {today > (new Date(quiz.untilshort)) && <b>Closed</b>}{today > (new Date(quiz.startshort)) && today < (new Date(quiz.untilshort)) && <b>Available</b>} {today < (new Date(quiz.startshort)) && <b>Not available until</b>} {today < (new Date(quiz.startshort)) && (new Date((quiz.startshort.substring(0,10)).replace(/-/g, '\/'))).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} {today < (new Date(quiz.startshort)) && <span>at 12:00 AM</span>} | <b>Due</b> {(new Date(quiz.dueshort.substring(0,10).replace(/-/g, '\/'))).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 11:59 pm | {quiz.points} pts
+                    <div className="d-inline text-danger">Multiple Modules</div> |
+                      {today > (new Date(quiz.untilshort)) && <b>Closed</b>}{today > (new Date(quiz.startshort)) && today < (new Date(quiz.untilshort)) && <b>Available</b>} {today < (new Date(quiz.startshort)) && <b>Not available until</b>} {today < (new Date(quiz.startshort)) && (new Date((quiz.startshort.substring(0,10)).replace(/-/g, '\/'))).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} {today < (new Date(quiz.startshort)) && <span>at 12:00 AM</span>} | <b>Due</b> {(new Date(quiz.dueshort.substring(0,10).replace(/-/g, '\/'))).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 11:59 pm | {quiz.points} pts | {quiz.questionCount} Question(s)
                     </div>
                   </div>
                   {(currentUser.role ==="FACULTY" || currentUser.role ==="ADMIN") && <div className="ms-auto">

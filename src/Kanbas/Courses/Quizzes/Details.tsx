@@ -52,84 +52,86 @@ export default function QuizDetails() {
     <div id="wd-quiz-details" className="d-flex flex-column">
         {(currentUser.role ==="FACULTY" || currentUser.role ==="ADMIN") && <div className="d-flex justify-content-center">
           <Link id="wd-add-quiz" className="btn btn-lg btn-secondary m-2 d-flex align-items-center"
-            type="button" to={"../quizzes/"+ qid+"/edit"}>
+            type="button" to={"../Quizzes/"+ qid+"/edit"}>
             <FaPencilAlt className="me-2"/>
             Edit
           </Link>
           <Link id="wd-add-quiz" className="btn btn-lg btn-secondary m-2"
-            type="button" to={"../quizzes/"+ qid+"/preview"}>
+            type="button" to={"../Quizzes/"+ qid+"/preview"}>
             Preview
           </Link>
         </div>}
         <hr/>
         <h1>{quiz.title}</h1>
-        <div className="d-flex mb-3">
-          <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Quiz Type</b></div>
-          <div id="wd-quiz-type" style={{width:"200px"}}>
-            {quiz.quizType}
+        <div className="d-flex flex-column justify-content-center align-items-center">
+          <div className="d-flex mb-3">
+            <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Quiz Type</b></div>
+            <div id="wd-quiz-type" style={{width:"200px"}}>
+              {quiz.quizType}
+            </div>
           </div>
-        </div>
-        <div className="d-flex mb-3">
-          <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Points</b></div>
-          <div id="wd-quiz-points" style={{width:"200px"}}>
-            {quiz.points}
+          <div className="d-flex mb-3">
+            <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Points</b></div>
+            <div id="wd-quiz-points" style={{width:"200px"}}>
+              {quiz.points}
+            </div>
           </div>
-        </div>
-        <div className="d-flex mb-3">
-          <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Points</b></div>
-          <div id="wd-quiz-group" style={{width:"200px"}}>
-            {quiz.assignGroup}
+          <div className="d-flex mb-3">
+            <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Points</b></div>
+            <div id="wd-quiz-group" style={{width:"200px"}}>
+              {quiz.assignGroup}
+            </div>
           </div>
-        </div>
-        <div className="d-flex mb-3">
-          <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Shuffle Answers</b></div>
-          <div id="wd-quiz-group" style={{width:"200px"}}>
-            {quiz.shuffle && "Yes"}
-            {!quiz.shuffle && "No"}
+          <div className="d-flex mb-3">
+            <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Shuffle Answers</b></div>
+            <div id="wd-quiz-group" style={{width:"200px"}}>
+              {quiz.shuffle && "Yes"}
+              {!quiz.shuffle && "No"}
+            </div>
           </div>
-        </div>
-        <div className="d-flex mb-3">
-          <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Time Limit</b></div>
-          <div id="wd-quiz-group" style={{width:"200px"}}>
-            {quiz.timeLimit > 0 && quiz.timeLimit} {quiz.timeLimit > 0 && " Minutes"}
-            {quiz.timeLimit == 0 && "No"}
+          <div className="d-flex mb-3">
+            <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Time Limit</b></div>
+            <div id="wd-quiz-group" style={{width:"200px"}}>
+              {quiz.timeLimit > 0 && quiz.timeLimit} {quiz.timeLimit > 0 && " Minutes"}
+              {quiz.timeLimit == 0 && "No"}
+            </div>
           </div>
-        </div>
-        <div className="d-flex mb-3">
-          <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Multiple Attempts</b></div>
-          <div id="wd-quiz-group" style={{width:"200px"}}>
-            {quiz.multipleAttemptsAllowed && "Yes, "}{quiz.multipleAttemptsAllowed && quiz.multipleAttempts}
-            {!quiz.multipleAttemptsAllowed && "No"}
+          <div className="d-flex mb-3">
+            <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Multiple Attempts</b></div>
+            <div id="wd-quiz-group" style={{width:"200px"}}>
+              {quiz.multipleAttemptsAllowed && "Yes, "}{quiz.multipleAttemptsAllowed && quiz.multipleAttempts}
+              {!quiz.multipleAttemptsAllowed && "No"}
+            </div>
           </div>
-        </div>
-        <div className="d-flex mb-3">
-          <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Show Correct Answers</b></div>
-          <div id="wd-quiz-group" style={{width:"200px"}}>
-            {quiz.showCorrect && "Yes"}
-            {!quiz.showCorrect && "No"}
+          <div className="d-flex mb-3">
+            <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Show Correct Answers</b></div>
+            <div id="wd-quiz-group" style={{width:"200px"}}>
+              {quiz.showCorrect && "Yes"}
+              {!quiz.showCorrect && "No"}
+            </div>
           </div>
-        </div>
-        <div className="d-flex mb-3">
-          <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>One Question at a Time</b></div>
-          <div id="wd-quiz-group" style={{width:"200px"}}>
-            {quiz.singleQuestion && "Yes"}
-            {!quiz.singleQuestion && "No"}
+          <div className="d-flex mb-3">
+            <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>One Question at a Time</b></div>
+            <div id="wd-quiz-group" style={{width:"200px"}}>
+              {quiz.singleQuestion && "Yes"}
+              {!quiz.singleQuestion && "No"}
+            </div>
           </div>
-        </div>
-        <div className="d-flex mb-3">
-          <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Webcam Requried</b></div>
-          <div id="wd-quiz-group" style={{width:"200px"}}>
-            {quiz.webcamRequired && "Yes"}
-            {!quiz.webcamRequired && "No"}
+          <div className="d-flex mb-3">
+            <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Webcam Requried</b></div>
+            <div id="wd-quiz-group" style={{width:"200px"}}>
+              {quiz.webcamRequired && "Yes"}
+              {!quiz.webcamRequired && "No"}
+            </div>
           </div>
-        </div>
-        <div className="d-flex mb-3">
-          <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Lock Questions After Answering</b></div>
-          <div id="wd-quiz-group" style={{width:"200px"}}>
-            {quiz.quesionLock && "Yes"}
-            {!quiz.quesionLock && "No"}
+          <div className="d-flex mb-3">
+            <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Lock Questions After Answering</b></div>
+            <div id="wd-quiz-group" style={{width:"200px"}}>
+              {quiz.questionLock && "Yes"}
+              {!quiz.questionLock && "No"}
+            </div>
           </div>
-        </div>
+      </div>
     <div className="d-flex flex-column">
         <div className="d-flex">
             <div className="me-3" style={{ width: '25%'}}>

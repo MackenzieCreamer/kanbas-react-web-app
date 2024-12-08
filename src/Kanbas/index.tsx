@@ -69,6 +69,7 @@ export default function Kanbas() {
           } else {
             fetchCourses();
           }       
+
     }, [currentUser, enrolling]);
   
     const [course, setCourse] = useState<any>({

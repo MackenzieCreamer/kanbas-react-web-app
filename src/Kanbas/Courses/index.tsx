@@ -12,6 +12,7 @@ import * as client from "./client"
 import Quizzes from "./Quizzes";
 import QuizEditor from "./Quizzes/Editor";
 import QuizDetails from "./Quizzes/Details";
+import { useSelector } from "react-redux";
 
 
 export default function Courses({ courses }: { courses: any[]; }) {
@@ -21,12 +22,12 @@ export default function Courses({ courses }: { courses: any[]; }) {
 
     const [users, setUsers] = useState<any[]>([]);
     const fetchUsers = async () => {
-      const users = await client.findUsersForCourse(course._id);
+      const users = await client.findUsersForCourse(cid as string);
       setUsers(users);
     };
     useEffect(() => {
       fetchUsers();
-    }, [course._id]);
+    });
 
     return (
       <div id="wd-courses">
