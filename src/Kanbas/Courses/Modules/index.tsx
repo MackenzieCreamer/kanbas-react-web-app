@@ -55,7 +55,7 @@ export default function Modules() {
           .map((module: any) => (
           <li className="wd-module list-group-item p-0 mb-5 fs-5 border-gray">
             <div className="wd-title p-3 ps-2 bg-secondary">
-            {currentUser.role === "FACULTY" && (<div>
+            {(currentUser.role === "FACULTY" || currentUser.role === "ADMIN") && (<div>
               <BsGripVertical className="me-2 fs-3" />
               {!module.editing && module.name}
             { module.editing && (
@@ -77,7 +77,7 @@ export default function Modules() {
               editModule={(moduleId) => dispatch(editModule(moduleId))}/>
             </div>
             )}
-            {currentUser.role !== "FACULTY" && (<div>
+            {(currentUser.role !== "FACULTY" && currentUser.role!== "ADMIN") && (<div>
               <BiCaretDown className="me-2 fs-3" />
               {!module.editing && module.name}
             </div>)}
@@ -86,12 +86,12 @@ export default function Modules() {
               <ul className="wd-lessons list-group rounded-0">
                 {module.lessons.map((lesson: any) => (
                   <li className="wd-lesson list-group-item p-3 ps-1">
-                    {currentUser.role === "FACULTY" && (<div>
+                    {(currentUser.role === "FACULTY" || currentUser.role === "ADMIN") && (<div>
                       <BsGripVertical className="me-2 fs-3" />
                       {lesson.name}
                       <LessonControlButtons />
                     </div>)}
-                    {currentUser.role !== "FACULTY" && (<div>
+                    {(currentUser.role !== "FACULTY" && currentUser.role!== "ADMIN") && (<div>
                       {lesson.name}
                     </div>)}
                   </li>

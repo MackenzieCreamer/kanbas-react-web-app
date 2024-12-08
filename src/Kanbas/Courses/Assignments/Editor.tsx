@@ -45,6 +45,7 @@ export default function AssignmentEditor() {
     const newAssignment = { cid, ...assignment };
     const localAssignment = await coursesClient.createAssignmentForCourse(cid, newAssignment);
     dispatch(addAssignment(localAssignment));
+    fetchAssignments();
   };
   return (
     <div id="wd-assignments-editor" className="d-flex flex-column">

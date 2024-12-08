@@ -9,6 +9,9 @@ import { Navigate, Route, Routes, useParams, useLocation} from "react-router";
 import PeopleTable from "./People/Table";
 import { useEffect, useState } from "react";
 import * as client from "./client"
+import Quizzes from "./Quizzes";
+import QuizEditor from "./Quizzes/Editor";
+import QuizDetails from "./Quizzes/Details";
 
 
 export default function Courses({ courses }: { courses: any[]; }) {
@@ -43,6 +46,9 @@ export default function Courses({ courses }: { courses: any[]; }) {
               <Route path="Modules" element={<Modules />} />
               <Route path="Assignments" element={<Assignments />} />
               <Route path="Assignments/:aid" element={<AssignmentEditor />} />
+              <Route path="Quizzes" element={<Quizzes />} />
+              <Route path="Quizzes/:qid/details" element={<QuizDetails />} />
+              <Route path="Quizzes/:qid/edit" element={<QuizEditor />} />
               <Route path="People" element={<PeopleTable users={users} />} />
               </Routes>
           </div>

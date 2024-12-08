@@ -14,7 +14,7 @@ export default function CourseStatus() {
   return (
     <div id="wd-course-status" className="m-2" style={{ width: "300px" }}>
       <h2>Course Status</h2>
-      {currentUser.role === "FACULTY" && (<div>
+      {(currentUser.role === "FACULTY" || currentUser.role === "ADMIN") && (<div>
       <div className="d-flex">
         <div className="w-50 pe-1">
           <button className="btn btn-lg btn-secondary w-100 text-nowrap">

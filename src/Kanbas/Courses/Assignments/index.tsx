@@ -63,7 +63,7 @@ export default function Assignments() {
         <ul id="wd-assignment-list" className="list-group rounded-0">
           <li className="wd-assignment-list-item list-group-item p-0 mb-5 fs-5 border-gray">
             <div className="wd-group-title d-flex p-3 ps-2 bg-secondary">
-              {currentUser.role === "FACULTY" && <BsGripVertical className="me-2 fs-3" />}
+              {(currentUser.role === "FACULTY" || currentUser.role === "ADMIN") && <BsGripVertical className="me-2 fs-3" />}
               <FaCaretDown className="me-1 fs-3"/>
               <div>ASSIGNMENTS</div>
               <div className="ms-auto bg-light ps-2 pe-2 me-1 rounded-pill">40% of Total</div>
