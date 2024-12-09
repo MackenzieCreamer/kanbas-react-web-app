@@ -1,25 +1,40 @@
 import react, { useEffect, useState, Component } from "react";
 import { EditorState, ContentState, convertToRaw, convertFromRaw, convertFromHTML } from 'draft-js';
-import { Editor } from 'react-draft-wysiwyg';
-import '../../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-// export default function QuizControlButtons({publishQuiz,quizId,setQuizId,deleteQuiz,quizTitle, titleState, setQuizTitle}:
-//     {publishQuiz:(quiz:any[],published:boolean) => void;quizId:string;setQuizId: (_id: string) => void;deleteQuiz:(quizId: string) => void;quizTitle:string;titleState:string,setQuizTitle:(title:string)=>void;}) {
 
-export default function QuestionEditor({question,removeQuestion,saveQuestion} : {question:any;removeQuestion:(questionId:string) => void;saveQuestion:(question : any[]) => void}) {
+import { Editor } from 'react-draft-wysiwyg';
+import * as questionsClient from "./client"
+import * as answersClient from "./Answers/client"
+import '../../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import { useDispatch, useSelector } from "react-redux";
+import { deleteAnswer, setAnswers, updateAnswer } from "./Answers/reducer";
+import { FaTrash } from "react-icons/fa";
+
+export default function QuestionEditor({question,removeQuestion,saveQuestion,setEditingQuestion} : {question:any;removeQuestion:(questionId:string) => void;saveQuestion:(question : any[]) => void;setEditingQuestion:(questionId:string) => void;}) {
     const [questionFC,setQuestionFC] = useState(question)
-    const cancelFunction = async (questionId : string) => {
-        if(question.firstSave === false){
-            if(question.description.entityMap) {
-                content = question.description;
-            } else {
-            content = {...question.description, entityMap:{}}
-            }
-            setEditorState(EditorState.createWithContent(convertFromRaw(content)));
-            setQuestionFC({ ...question, description: convertToRaw(editorState.getCurrentContent())})
-        } else {
-            removeQuestion(questionId)
+    const { answers } = useSelector((state: any) => state.answersReducer);
+    const [originalAnswers,setOriginalAnswers] = useState<any>([])
+    const [correctChoices,setCorrectChoices] = useState<any>(question.correctChoices)
+    const cancelFunction = async () => {
+        for(const answer of answers){
+            await removeAnswer(answer._id)
         }
+        for(const answer of originalAnswers){
+            await createAnswerForQuestion(answer)
+        }
+        dispatch(setAnswers(originalAnswers))
+        setEditingQuestion("")
     }
+
+    const dispatch = useDispatch();
+
+    const fetchAnswers = async () => {
+        const answers = await questionsClient.findAnswersForQuestion(question._id as string);
+        dispatch(setAnswers(answers));
+        setOriginalAnswers(answers)
+      };
+      useEffect(() => {
+        fetchAnswers();
+      }, []);
     
     let content = {blocks:[],entityMap:{}};
     if(questionFC.description.entityMap) {
@@ -33,13 +48,54 @@ export default function QuestionEditor({question,removeQuestion,saveQuestion} : 
       setEditorState(editorState);
     };
 
-    const typeChange = function (typeValue:any) {
-        if(typeValue == "MC"){
-            setQuestionFC({...questionFC, questionType: typeValue, choices: [], correctChoices: ["0"]})
-        } else if (typeValue == "TF"){
-            setQuestionFC({...questionFC, questionType: typeValue, choices: ["True","False"], correctChoices:["True"]})
+
+    const createAnswerForQuestion = async (passedAnswer:any) => {
+        let utilizedAnswer;
+        const newAnswer = { answerContent: "New Answer", question: question._id };
+        if(passedAnswer==""){
+            utilizedAnswer = newAnswer
         } else {
-            setQuestionFC({...questionFC, questionType: typeValue, choices: [], correctChoices: []})
+            utilizedAnswer = passedAnswer
+        }
+        const answer = await questionsClient.createAnswerForQuestion(question._id, utilizedAnswer);
+        const answers = await questionsClient.findAnswersForQuestion(question._id as string);
+        dispatch(setAnswers(answers));
+        return answer;
+      };
+
+    const removeAnswer = async (answerId: string) => {
+        await answersClient.deleteAnswer(answerId);
+        dispatch(deleteAnswer(answerId));
+    };
+
+    const saveAnswer = async (answer: any) => {
+        await answersClient.updateAnswer(answer);
+        dispatch(updateAnswer(answer));
+    };
+
+    const saveQuestionOnPress = async (question:any) => {
+        if(question.questionType == "BLANK"){
+            question.correctChoices = answers
+        } else {
+            question.correctChoices = [correctChoices];
+        }
+        saveQuestion(question)
+        setEditingQuestion("");
+    }
+
+    const typeChange = async function (typeValue:any) {
+        for(const answer of answers){
+            await removeAnswer(answer._id)
+        }
+        if(typeValue == "MC"){
+            setQuestionFC({...questionFC, questionType: typeValue, correctChoices: []})
+        } else if (typeValue == "TF"){
+            setQuestionFC({...questionFC, questionType: typeValue, correctChoices:[]})
+            for(const answerChoice of ["False","True"]){
+                const answer = createAnswerForQuestion({ answerContent: answerChoice, question: question._id })
+            }
+        } else {
+            setQuestionFC({...questionFC, questionType: typeValue, correctChoices: []})
         }
     }
 
@@ -65,37 +121,57 @@ export default function QuestionEditor({question,removeQuestion,saveQuestion} : 
                 editorClassName="form-control h-50"
                 onEditorStateChange={onEditorStateChange}
             />
-        <div id={"Answers_" + questionFC._id}>
-            {(questionFC.questionType == "TF") && questionFC.choices.map((choice : string) => 
-                <div className="d-flex mb-2">
-                <input type="radio" value={choice} checked={choice===questionFC.correctChoices[0]} name={questionFC._id} id={choice+"_"+questionFC._id} onChange={(e) => {setQuestionFC({ ...questionFC, correctChoices: [e.target.value] })}} className="me-2"/>
-                <label htmlFor={choice+"_"+questionFC._id}>{choice}</label>
-                </div>
-            )}
-            {(questionFC.questionType == "MC") && questionFC.choices.map((choice : string) => {
-                const positionalValue = questionFC.choices.indexOf(choice)
-                return(
-                    <div className="d-flex mb-2">
-                    <input type="radio" value={choice} checked={choice==questionFC.correctChoices[0]} name={questionFC._id} id={choice+"_"+questionFC._id} onChange={(e) => {setQuestionFC({ ...questionFC, correctChoices: [e.target.value] })}} className="me-2"/>
+        <div className="w-100">
+            <div id={"Answers_" + question._id} className="d-flex flex-column w-25">
+                {(questionFC.questionType == "TF") && answers.map((choice : any) => {
+                    let defaultChecked;
+                    if(questionFC.correctChoices[0] === undefined){
+                        defaultChecked = false;
+                    } else {
+                        defaultChecked = choice._id==questionFC.correctChoices[0]._id
+                    }
+                    return(
+                        <div className="d-flex mb-2">
+                            <input type="radio" value={choice._id} defaultChecked={defaultChecked} name={questionFC._id} id={choice._id+"_"+questionFC._id} onChange={(e) => {setCorrectChoices(choice)}} className="me-2"/>
+                            <label htmlFor={choice._id+"_"+questionFC._id}>{choice.answerContent}</label>
+                        </div>
+                    )}
+                )}
+                {(questionFC.questionType == "MC") && answers.map((choice : any) => {
+                    let defaultChecked;
+                    if(questionFC.correctChoices[0] === undefined){
+                        defaultChecked = false;
+                    } else {
+                        defaultChecked = choice._id==questionFC.correctChoices[0]._id
+                    }
+                    return(
+                        <div className="d-flex mb-2 justify-content-center align-items-center">
+                            <input type="radio" value={choice._id} defaultChecked={defaultChecked} name={questionFC._id} id={choice._id+"_"+questionFC._id} onChange={(e) => {setCorrectChoices(choice)}} className="me-2"/>
+                            <input className="form-control me-3" value={choice.answerContent} onChange={(e) => saveAnswer({...choice,answerContent:e.target.value})}/>
+                            <FaTrash onClick={() => removeAnswer(choice._id)}></FaTrash>
+                        </div>
+                    )
+                    
+                })}
+                {(questionFC.questionType == "BLANK") && answers.map((choice : any) => 
+                    <div className="d-flex mb-2 justify-content-center align-items-center">
+                        <input className="form-control me-3" value={choice.answerContent} onChange={(e) => saveAnswer({...choice,answerContent:e.target.value})}/>
+                        <FaTrash onClick={() => removeAnswer(choice._id)}></FaTrash>
                     </div>
-                )
-                
-            })}
-            {(questionFC.questionType == "BLANK") && questionFC.correctChoices.map((choice : string) => 
-                <div className="d-flex mb-2">
-
+                )}
+            </div>
+            {(questionFC.questionType == "MC" || questionFC.questionType == "BLANK") && 
+            <div className="w-100 m-3 d-flex flex-column justify-content-center align-items-center">
+                <div className="btn btn-danger w-25" onClick={() => createAnswerForQuestion("")}>
+                    Add another answer
                 </div>
-            )}
-        </div>
-        {(questionFC.questionType == "MC" || questionFC.questionType == "BLANK") &&
-        <div className="btn btn-danger" onClick={() => setQuestionFC({...questionFC,choices:[...questionFC.choices, questionFC.choices.length]})}>
-            Add another answer
-        </div>
-        }
-        <div id={"buttonsFor_" + questionFC._id} className="d-flex w-100 justify-content-end align-items-center">
-            <button id={"cancelFor_" + questionFC._id} onClick={() => {cancelFunction(question._id)}} className="btn btn-secondary me-1">Cancel</button>
-            <button onClick={() => removeQuestion(question._id)} className="btn btn-danger me-1">Delete</button>
-            <button onClick={() => saveQuestion({...questionFC,firstSave:false})} className="btn btn-success">Save</button>
+            </div>
+            }
+            <div id={"buttonsFor_" + questionFC._id} className="d-flex w-100 justify-content-end align-items-center">
+                <button id={"cancelFor_" + questionFC._id} onClick={() => {cancelFunction()}} className="btn btn-secondary me-1">Cancel</button>
+                <button onClick={() => {setEditingQuestion(""); removeQuestion(question._id)}} className="btn btn-danger me-1">Delete</button>
+                <button onClick={() => saveQuestionOnPress({...questionFC,firstSave:false})} className="btn btn-success">Save</button>
+            </div>
         </div>
     </div>
   </div>);

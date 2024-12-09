@@ -12,11 +12,13 @@ import '../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.cs
 import * as questionsClient from "./Questions/client"
 import draftToHtml from 'draftjs-to-html';
 import QuestionEditor from "./Questions/Editor";
+import QuestionPreview from "./Questions/Preview";
 
 export default function QuizEditor() {
   const { cid,qid } = useParams();
   const { quizzes } = useSelector((state: any) => state.quizzesReducer);
   const { questions } = useSelector((state: any) => state.questionsReducer);
+  const [editingQuestion, setEditingQuestion] = useState<any>("");
   const dispatch = useDispatch();
   const fetchQuizzes = async () => {
     const quizzes = await coursesClient.findQuizzesForCourse(cid as string);
@@ -103,6 +105,7 @@ export default function QuizEditor() {
     await questionsClient.updateQuestion(question);
     dispatch(updateQuestion(question));
   };
+
 
   return (
     <div id="wd-quizzes-editor" className="d-flex flex-column">
@@ -214,13 +217,21 @@ export default function QuizEditor() {
             </div>
           </div>}
           {!detailMode && <div className="m-auto mt-3 d-flex flex-column w-75 justify-content-center align-items-center">
-            {questions.map((question:any) => (
-              <QuestionEditor 
-                question={question}
-                removeQuestion={removeQuestion}
-                saveQuestion={saveQuestion}
-                />
-            ))}
+            {questions.map((question:any) => {
+              if(question._id == editingQuestion)
+                return (
+                  <QuestionEditor 
+                  question={question}
+                  removeQuestion={removeQuestion}
+                  saveQuestion={saveQuestion}
+                  setEditingQuestion={setEditingQuestion}
+                  />
+                )
+                else
+                return(
+                <QuestionPreview question={question} setEditingQuestion={setEditingQuestion}/>
+                )
+            })}
             <button className="btn btn-secondary" onClick={() => createQuestionForQuiz()}>+ Add Question</button>
           </div>}
           <hr/>

@@ -18,7 +18,7 @@ export const findQuestionsForQuiz = async (quizId: string) => {
 
 export const findPointsForQuiz = async (quizId: string) => {
     const { data } = await axiosWithCredentials.get(`${QUIZZES_API}/${quizId}/QuestionPoints`);
-    const pointsArray = data.map((d:any) => d.points) 
+    const pointsArray = data.map((d:any) => {console.log(d); return d.points}) 
     const points = pointsArray.reduce((partialSum:number, a:number) => partialSum + a, 0);
     return points;
 };
@@ -30,7 +30,7 @@ export const findQuestionCountForQuiz = async (quizId: string) => {
 
 export const createQuestionForQuiz = async (quizId: string, question: any) => {
     const response = await axiosWithCredentials.post(
-        `${QUIZZES_API}/${quizId}`,
+        `${QUIZZES_API}/${quizId}/Questions`,
         question
       );
       return response.data;
