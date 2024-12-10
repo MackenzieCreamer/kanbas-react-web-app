@@ -113,6 +113,8 @@ export default function QuizEditor() {
     dispatch(updateQuestion(question));
     setQuiz({...quiz, points: await quizzesClient.findPointsForQuiz(quiz._id)})
     saveQuizButton(false)
+    const questions = await quizzesClient.findQuestionsForQuiz(quiz._id as string);
+    dispatch(setQuestions(questions));
   };
 
 
@@ -212,18 +214,18 @@ export default function QuizEditor() {
                 <div className="f-flex flex-column mb-3">
                   <label htmlFor="wd-due-date">Due</label>
                   <input id="wd-due-date" type="date"
-                    value={quiz.dueshort} onChange={(e) => setQuiz({ ...quiz, dueshort: e.target.value })} className="form-control"/>
+                    defaultValue={quiz.dueshort} onChange={(e) => setQuiz({ ...quiz, dueshort: e.target.value })} className="form-control"/>
                 </div>
                 <div className="d-flex mb-3">
                     <div className="d-flex flex-column me-1 w-50">
                       <label htmlFor="wd-available-from">Available from</label>
                       <input id="wd-available-from" type="date"
-                        value={quiz.startshort} onChange={(e) => setQuiz({ ...quiz, startshort: e.target.value })} className="form-control"/>
+                        defaultValue={quiz.startshort} onChange={(e) => setQuiz({ ...quiz, startshort: e.target.value })} className="form-control"/>
                     </div>
                   <div className="d-flex flex-column w-50">
                     <label htmlFor="wd-available-until">Until</label>
                     <input id="wd-available-until" type="date"
-                      value={quiz.untilshort} onChange={(e) => setQuiz({ ...quiz, untilshort: e.target.value })} className="form-control"/>
+                      defaultValue={quiz.untilshort} onChange={(e) => setQuiz({ ...quiz, untilshort: e.target.value })} className="form-control"/>
                   </div>
                 </div>
               </div>

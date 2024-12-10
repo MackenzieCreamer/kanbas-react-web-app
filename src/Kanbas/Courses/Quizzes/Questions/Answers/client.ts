@@ -11,3 +11,7 @@ export const updateAnswer = async (answer: any) => {
     const { data } = await axiosWithCredentials.put(`${ANSWERS_API}/${answer._id}`, answer);
     return data;
 };
+export const findAnswerById = async (answerId: string) => {
+    const { data } = await axiosWithCredentials.get(`${ANSWERS_API}/${answerId}`);
+    return data;
+};

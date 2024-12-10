@@ -14,6 +14,7 @@ import QuizEditor from "./Quizzes/Editor";
 import QuizDetails from "./Quizzes/Details";
 import { useSelector } from "react-redux";
 import AttemptScreen from "./Quizzes/Attempts";
+import ReviewScreen from "./Quizzes/Attempts/Review";
 
 
 export default function Courses({ courses }: { courses: any[]; }) {
@@ -52,6 +53,7 @@ export default function Courses({ courses }: { courses: any[]; }) {
               <Route path="Quizzes/:qid/details" element={<QuizDetails />} />
               <Route path="Quizzes/:qid/edit" element={<QuizEditor />} />
               <Route path="Quizzes/:qid/preview" element={<AttemptScreen />} />
+              <Route path="Quizzes/:qid/:attemptId/review" element={<ReviewScreen />} />
               <Route path="People" element={<PeopleTable users={users} />} />
               </Routes>
           </div>

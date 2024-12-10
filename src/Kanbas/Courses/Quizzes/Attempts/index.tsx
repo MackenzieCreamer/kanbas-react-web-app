@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 import * as coursesClient from "../../client"
 import * as quizzesClient from "../client"
 import * as questionsClient from "../Questions/client"
+import * as answersClient from "../Questions/Answers/client"
 import * as usersClient from "../../../Account/client"
 import * as attemptsClient from "../Attempts/client"
 import { setQuestions } from "../Questions/reducer";
@@ -12,6 +13,7 @@ import { EditorState, ContentState, convertToRaw, convertFromRaw, convertFromHTM
 import draftToHtml from "draftjs-to-html";
 import parse from "html-react-parser";
 import { Answers } from "./Answers";
+import { Link } from "react-router-dom";
 
 
 
@@ -20,6 +22,7 @@ export default function AttemptScreen(){
     const { quizzes } = useSelector((state: any) => state.quizzesReducer);
     const { questions } = useSelector((state: any) => state.questionsReducer);
     const { currentUser } = useSelector((state: any) => state.accountReducer);
+
 
     
     const dispatch = useDispatch();
@@ -70,26 +73,46 @@ export default function AttemptScreen(){
         const answerList = answers;
         answerList[questionNumber] = answer;
         setAnswers(answerList)
-        console.log(answerList)
     }
 
     const submitAttempt = async () => {
         const answerList = answers;
+        let points = 0;
         for(const question of questions){
             const questionNumber = questions.indexOf(question)
             if(question.questionType == "BLANK"){
-                const answer = await questionsClient.createAnswerForQuestion(question._id,{answerContent:answers[questionNumber]})
-                answerList[questionNumber] = answer
+                if(answers[questionNumber] !== undefined){
+                    let needNew = true;
+                    for(const choice of question.correctChoices){
+                        const value = await answersClient.findAnswerById(choice)
+                        if(value[0].answerContent == answers[questionNumber]){
+                            console.log("correct")
+                            setSpecificAnswer(questionNumber,value[0])
+                            needNew = false;
+                            points += question.points;
+                            break
+                        }
+                    }
+                    if(needNew){
+                        const answer = await questionsClient.createAnswerForQuestion(question._id,{answerContent:answers[questionNumber]})
+                        console.log(answer)
+                        answerList[questionNumber] = answer    
+                    }
+                }
+            } else {
+                if(answers[questionNumber]._id == question.correctChoices[0]){
+                    points += question.points;
+                }
             }
         }
-            const attempt = await usersClient.getAttemptForUser(quiz._id,currentUser._id)
-            if(attempt.length===0){
-                const { id } = await usersClient.createAttemptForUser(quiz._id,currentUser._id,{answers:answerList,attemptNumber:1})
-                return id;
-            } else {
-                const status = await attemptsClient.updateAttempt({...attempt[0],answers:answerList,attemptNumber:attempt[0].attemptNumber+1})
-                return attempt._id
-            }
+        const attempt = await usersClient.getAttemptForUser(currentUser._id,quiz._id)
+        if(attempt.length===0){
+            const attempt = await usersClient.createAttemptForUser(currentUser._id,quiz._id,{answers:answerList,attemptNumber:1,points:points})
+            return attempt._id;
+        } else {
+            const status = await attemptsClient.updateAttempt({...attempt[0],answers:answerList,attemptNumber:attempt[0].attemptNumber+1,points:points})
+            return attempt[0]._id
+        }
 
     }
 
@@ -97,10 +120,10 @@ export default function AttemptScreen(){
         <div>
             <h1>{quiz.title}</h1>
             <hr/>
-            {parse(parseDescription(quiz.description))}
+            <div className="w-75 m-auto">
             {questions.map( (question:any) => {
             const questionNumber = questions.indexOf(question)
-            return <div className="form-control p-0 border-secondary mb-3 w-75 rounded-0">
+            return <div className="form-control p-0 border-secondary mb-3 rounded-0">
                 <div className="bg-light d-flex border-bottom border-secondary p-1 justify-content-between align-items-center">
                     <h2 className="d-inline p-0 m-0"><b>{question.title}</b></h2>
                     <h3 className="d-inline p-0 m-0">{question.points} pts</h3>
@@ -114,10 +137,14 @@ export default function AttemptScreen(){
                         questionNumber={questionNumber}
                         setAnswer={setSpecificAnswer}
                         />
+                    </div>
                 </div>
+            })}
+            <div>
+                <button className="btn btn-secondary float-end" onClick={async ()=>{const attemptId = await submitAttempt(); window.location.href="#/Kanbas/Courses/"+cid+"/Quizzes/"+qid+"/"+attemptId+"/review"}}>Submit Quiz</button>
+                {(currentUser.role==="FACULTY" || currentUser.role==="ADMIN") && <Link className="btn btn-secondary me-3 float-end" to={"/Kanbas/Courses/"+cid+"/Quizzes/"+qid+"/Edit"}>Edit This Quiz</Link>}
             </div>
-        })}
-            <button className="btn btn-secondary" onClick={async ()=>{const attemptId = await submitAttempt();/*window.location.href=""*/}}>Submit Quiz</button>
+        </div>
         </div>
     );
 }

@@ -17,8 +17,8 @@ export function Answers({question, questionNumber,setAnswer} : {question:any;que
             listedAnswers.map((answer:any)=>{
                 return(
                     <div>
-                        <input type="radio" className="form-check-input" id={answer._id} name={question._id} onClick={() => setAnswer(questionNumber,answer)}/>
-                        <label htmlFor={answer._id} className="form-check-label" onClick={() => setAnswer(questionNumber,answer)}>
+                        <input type="radio" className="form-check-input ms-1" id={answer._id} name={question._id} onClick={() => setAnswer(questionNumber,answer)}/>
+                        <label htmlFor={answer._id} className="form-check-label ms-1" onClick={() => setAnswer(questionNumber,answer)}>
                             {answer.answerContent}
                         </label>
                         <hr className="p-0 mb-1"/>

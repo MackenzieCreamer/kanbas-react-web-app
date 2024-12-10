@@ -11,7 +11,9 @@ import { addQuiz, deleteQuiz, setQuizzes, updateQuiz } from "./reducer";
 import { useEffect, useState } from "react";
 import * as coursesClient from "../client";
 import * as quizzesClient from "./client"
+import * as attemptsClient from "./Attempts/client"
 import { EditorState, ContentState, convertToRaw, convertFromRaw, convertFromHTML } from 'draft-js';
+import Points from "./Points";
 
 
 export default function Quizzes() {
@@ -68,11 +70,8 @@ export default function Quizzes() {
       fetchQuizzes();
     }
 
-    const getQuestionCountForQuiz = async (quizId : string) => {
-      const status = await quizzesClient.findQuestionsForQuiz(quizId)
-      console.log(status)
-      return status.length; 
-    }
+
+
 
     const today = new Date();
   
@@ -115,36 +114,36 @@ export default function Quizzes() {
             </div>
             <ul className="wd-quiz list-group rounded-0 border-start border-success border-5">
               {quizzes
-                .map((quiz: any) => (
-                  <li className="wd-quiz list-group-item p-3 ps-1 d-flex align-items-center">
-                  {(currentUser.role ==="FACULTY" || currentUser.role ==="ADMIN") && <BsGripVertical className="me-2 fs-3" />}
-                  <LiaClipboardListSolid className="me-2 fs-3 text-success"/>
-                  <div className="d-flex flex-column align-content-center w-75">
-                    <a className="wd-quiz-link text-decoration-none text-dark fw-bold"
-                      href={"#/Kanbas/Courses/"+cid+"/Quizzes/"+quiz._id+"/details"}>
-                      {quiz.title}
-                    </a>
-                    <div className="fs-6">
-                    <div className="d-inline text-danger">Multiple Modules</div> |
-                      {today > (new Date(quiz.untilshort)) && <b>Closed</b>}{today > (new Date(quiz.startshort)) && today < (new Date(quiz.untilshort)) && <b>Available</b>} {today < (new Date(quiz.startshort)) && <b>Not available until</b>} {today < (new Date(quiz.startshort)) && (new Date((quiz.startshort.substring(0,10)).replace(/-/g, '\/'))).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} {today < (new Date(quiz.startshort)) && <span>at 12:00 AM</span>} | <b>Due</b> {(new Date(quiz.dueshort.substring(0,10).replace(/-/g, '\/'))).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 11:59 pm | {quiz.points} pts | {quiz.questionCount} Question(s)
+                .map((quiz: any) => {
+                  return (
+                    <li className="wd-quiz list-group-item p-3 ps-1 d-flex align-items-center">
+                    {(currentUser.role ==="FACULTY" || currentUser.role ==="ADMIN") && <BsGripVertical className="me-2 fs-3" />}
+                    <LiaClipboardListSolid className="me-2 fs-3 text-success"/>
+                    <div className="d-flex flex-column align-content-center w-75">
+                      <a className="wd-quiz-link text-decoration-none text-dark fw-bold"
+                        href={"#/Kanbas/Courses/"+cid+"/Quizzes/"+quiz._id+"/details"}>
+                        {quiz.title}
+                      </a>
+                      <div className="fs-6">
+                      {today > (new Date(quiz.untilshort)) && <b>Closed</b>}{today > (new Date(quiz.startshort)) && today < (new Date(quiz.untilshort)) && <b>Available</b>} {today < (new Date(quiz.startshort)) && <b>Not available until</b>} {today < (new Date(quiz.startshort)) && (new Date((quiz.startshort.substring(0,10)).replace(/-/g, '\/'))).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} {today < (new Date(quiz.startshort)) && <span>at 12:00 AM</span>} | <b>Due</b> {(new Date(quiz.dueshort.substring(0,10).replace(/-/g, '\/'))).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric'})} at 11:59 pm | <Points quiz={quiz}/> {quiz.points} pts | {quiz.questionCount} Question(s)
+                      </div>
                     </div>
-                  </div>
-                  {(currentUser.role ==="FACULTY" || currentUser.role ==="ADMIN") && <div className="ms-auto">
-                    <QuizControlButtons
-                     quiz={quiz}
-                     published={quiz.published}
-                     publishQuiz={publishQuiz}
-                     setQuizId={setQuizId}
-                     quizId={quiz._id}
-                     deleteQuiz={() => {
-                      removeQuiz(quizId)
-                    }}  setQuizTitle={setQuizTitle}
-                    quizTitle={quiz.title}
-                    titleState = {quizTitle}
-                    /> 
-                  </div>}
-                </li>
-                ))
+                    {(currentUser.role ==="FACULTY" || currentUser.role ==="ADMIN") && <div className="ms-auto">
+                      <QuizControlButtons
+                      quiz={quiz}
+                      published={quiz.published}
+                      publishQuiz={publishQuiz}
+                      setQuizId={setQuizId}
+                      quizId={quiz._id}
+                      deleteQuiz={() => {
+                        removeQuiz(quizId)
+                      }}  setQuizTitle={setQuizTitle}
+                      quizTitle={quiz.title}
+                      titleState = {quizTitle}
+                      /> 
+                    </div>}
+                  </li>
+                )})
               }
             </ul>
           </li>

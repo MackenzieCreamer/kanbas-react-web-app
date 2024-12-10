@@ -6,6 +6,9 @@ import react, { useEffect, useState, Component } from "react";
 import * as quizzesClient from "./client"
 import * as coursesClient from "../client"
 import { Link } from "react-router-dom";
+import draftToHtml from "draftjs-to-html";
+import parse from "html-react-parser";
+import ButtonsForDetailsPage from "./ButtonLogicHandler";
 
 export default function QuizDetails() {
   const { cid,qid } = useParams();
@@ -46,7 +49,9 @@ export default function QuizDetails() {
     fetchQuizzes();
   }, []);
 
-  
+  const parseDescription = (description:any) => {
+    return draftToHtml(description);
+  }
 
   return (
     <div id="wd-quiz-details" className="d-flex flex-column">
@@ -63,6 +68,7 @@ export default function QuizDetails() {
         </div>}
         <hr/>
         <h1>{quiz.title}</h1>
+        {parse(parseDescription(quiz.description))}
         <div className="d-flex flex-column justify-content-center align-items-center">
           <div className="d-flex mb-3">
             <div className="align-content-center text-end pe-3" style={{width:"200px"}}><b>Quiz Type</b></div>
@@ -162,6 +168,7 @@ export default function QuizDetails() {
             </div>
         </div>
     </div>
+    <ButtonsForDetailsPage quiz={quiz}/>
   </div>
 )
 ;}
