@@ -48,6 +48,16 @@ export default function TOC() {
           My GitHub
         </a>
       </li>
+      <li className="nav-item">
+        <a id="wd-github-node" href="https://github.com/MackenzieCreamer/kanbas-node-server" className="nav-link">
+          GitHub Link (Node)
+        </a>
+      </li>
+      <li className="nav-item">
+        <a id="wd-github-react" href="https://github.com/MackenzieCreamer/kanbas-react-web-app" className="nav-link">
+          GitHub Link (React)
+        </a>
+      </li>
     </ul>
   );
 }
