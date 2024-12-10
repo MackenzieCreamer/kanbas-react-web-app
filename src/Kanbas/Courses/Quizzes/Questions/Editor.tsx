@@ -10,10 +10,10 @@ import { deleteAnswer, setAnswers, updateAnswer } from "./Answers/reducer";
 import { FaTrash } from "react-icons/fa";
 
 export default function QuestionEditor({question,removeQuestion,saveQuestion,setEditingQuestion} : {question:any;removeQuestion:(questionId:string) => void;saveQuestion:(question : any[]) => void;setEditingQuestion:(questionId:string) => void;}) {
-    const [questionFC,setQuestionFC] = useState(question)
+    const [questionFC,setQuestionFC] = useState({...question})
     const { answers } = useSelector((state: any) => state.answersReducer);
     const [originalAnswers,setOriginalAnswers] = useState<any>([])
-    const [correctChoices,setCorrectChoices] = useState<any>(question.correctChoices)
+    const [correctChoices,setCorrectChoices] = useState<any>(question.correctChoices[0])
     const cancelFunction = async () => {
         for(const answer of answers){
             await removeAnswer(answer._id)
@@ -77,7 +77,7 @@ export default function QuestionEditor({question,removeQuestion,saveQuestion,set
         if(question.questionType == "BLANK"){
             question.correctChoices = answers
         } else {
-            question.correctChoices = [correctChoices];
+            question.correctChoices = [{...correctChoices}];
         }
         saveQuestion(question)
         setEditingQuestion("");
@@ -125,10 +125,13 @@ export default function QuestionEditor({question,removeQuestion,saveQuestion,set
             <div id={"Answers_" + question._id} className="d-flex flex-column w-25">
                 {(questionFC.questionType == "TF") && answers.map((choice : any) => {
                     let defaultChecked;
-                    if(questionFC.correctChoices[0] === undefined){
+                    if(question.correctChoices[0] === undefined || question.correctChoices[0] === null){
                         defaultChecked = false;
-                    } else {
-                        defaultChecked = choice._id==questionFC.correctChoices[0]._id
+                    } else if (question.correctChoices[0]._id === undefined) {
+                        defaultChecked = choice._id==question.correctChoices[0]
+                    }
+                    else {
+                        defaultChecked = choice._id==question.correctChoices[0]._id
                     }
                     return(
                         <div className="d-flex mb-2">
@@ -139,10 +142,13 @@ export default function QuestionEditor({question,removeQuestion,saveQuestion,set
                 )}
                 {(questionFC.questionType == "MC") && answers.map((choice : any) => {
                     let defaultChecked;
-                    if(questionFC.correctChoices[0] === undefined){
+                    if(question.correctChoices[0] === undefined || question.correctChoices[0] === null){
                         defaultChecked = false;
-                    } else {
-                        defaultChecked = choice._id==questionFC.correctChoices[0]._id
+                    } else if (question.correctChoices[0]._id === undefined) {
+                        defaultChecked = choice._id==question.correctChoices[0]
+                    }
+                    else {
+                        defaultChecked = choice._id==question.correctChoices[0]._id
                     }
                     return(
                         <div className="d-flex mb-2 justify-content-center align-items-center">

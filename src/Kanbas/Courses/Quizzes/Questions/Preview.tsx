@@ -20,7 +20,7 @@ export default function QuestionPreview({question, setEditingQuestion} : {questi
         fetchAnswers();
       }, []);
     
-    // console.log(question.correctChoices)
+    // console.log(question.title,question.correctChoices[0]._id)
 
     let content = {blocks:[],entityMap:{}};
     if(question.description.entityMap) {
@@ -57,9 +57,12 @@ export default function QuestionPreview({question, setEditingQuestion} : {questi
             <div id={"Answers_" + question._id} className="d-flex flex-column w-25">
                 {(question.questionType == "TF") && answers != undefined && answers.map((choice : any) => {
                     let defaultChecked;
-                    if(question.correctChoices[0] === undefined){
+                    if(question.correctChoices[0] === undefined || question.correctChoices[0] === null){
                         defaultChecked = false;
-                    } else {
+                    } else if (question.correctChoices[0]._id === undefined) {
+                        defaultChecked = choice._id==question.correctChoices[0]
+                    }
+                    else {
                         defaultChecked = choice._id==question.correctChoices[0]._id
                     }
                     return(
@@ -71,9 +74,12 @@ export default function QuestionPreview({question, setEditingQuestion} : {questi
                 )}
                 {(question.questionType == "MC") && answers != undefined && answers.map((choice : any) => {
                     let defaultChecked;
-                    if(question.correctChoices[0] === undefined){
+                    if(question.correctChoices[0] === undefined || question.correctChoices[0] === null){
                         defaultChecked = false;
-                    } else {
+                    } else if (question.correctChoices[0]._id === undefined) {
+                        defaultChecked = choice._id==question.correctChoices[0]
+                    }
+                    else {
                         defaultChecked = choice._id==question.correctChoices[0]._id
                     }
                     return(

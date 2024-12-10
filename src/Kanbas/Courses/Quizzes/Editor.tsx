@@ -19,6 +19,8 @@ export default function QuizEditor() {
   const { quizzes } = useSelector((state: any) => state.quizzesReducer);
   const { questions } = useSelector((state: any) => state.questionsReducer);
   const [editingQuestion, setEditingQuestion] = useState<any>("");
+  
+  
   const dispatch = useDispatch();
   const fetchQuizzes = async () => {
     const quizzes = await coursesClient.findQuizzesForCourse(cid as string);
@@ -68,10 +70,12 @@ export default function QuizEditor() {
 
   const newFlag = quizzes.filter((quiz: any) => quiz._id === qid)[0] === undefined;
 
-  const saveQuizButton = async () => {
+  const saveQuizButton = async (location:boolean) => {
     await saveQuiz({ ...quiz})
-    window.location.href=("#/Kanbas/Courses/"+ cid +"/Quizzes");
-    window.location.href=("#/Kanbas/Courses/"+ cid +"/Quizzes/"+qid+"/Details")
+    if(location){
+      window.location.href=("#/Kanbas/Courses/"+ cid +"/Quizzes");
+      window.location.href=("#/Kanbas/Courses/"+ cid +"/Quizzes/"+qid+"/Details")  
+    }
   }
   
 
@@ -99,11 +103,16 @@ export default function QuizEditor() {
   const removeQuestion = async (questionId: string) => {
     await questionsClient.deleteQuestion(questionId);
     dispatch(deleteQuestion(questionId));
+    setQuiz({...quiz, points: await quizzesClient.findPointsForQuiz(quiz._id)})
+    saveQuizButton(false)
   };
 
   const saveQuestion = async (question: any) => {
+    console.log(question)
     await questionsClient.updateQuestion(question);
     dispatch(updateQuestion(question));
+    setQuiz({...quiz, points: await quizzesClient.findPointsForQuiz(quiz._id)})
+    saveQuizButton(false)
   };
 
 
@@ -112,6 +121,10 @@ export default function QuizEditor() {
         <div className="d-flex w-100 border-bottom border-secondary align-items-center justify-content-center pb-1 mb-1">
           <button onClick={() => setDetailMode(true)} className={`btn btn-secondary me-3 ${detailMode ? 'disabled':''}`}>Details</button>
           <button onClick={() => setDetailMode(false)} className={`btn btn-secondary ${detailMode ? '':'disabled'}`}>Questions</button>
+          <div className="d-flex w-25 justify-content-end align-items-center">
+            <label htmlFor="wd-points-count" className="ms-3 me-3">Points: </label>
+            <input disabled value={quiz.points} className=" w-25 form-control"/>
+          </div>
         </div>
         <div>
           {detailMode && <div>
@@ -236,10 +249,10 @@ export default function QuizEditor() {
           </div>}
           <hr/>
 
-          <Link id="wd-save" type="button" onMouseOver={async () => setQuiz({ ...quiz, published: true, points: await quizzesClient.findPointsForQuiz(quiz._id), questionCount: await quizzesClient.findQuestionCountForQuiz(quiz._id) })} onClick={() =>{saveQuiz({ ...quiz})}} 
+          <Link id="wd-save" type="button" onMouseOver={async () => setQuiz({ ...quiz, published: true, questionCount: await quizzesClient.findQuestionCountForQuiz(quiz._id) })} onClick={() =>{saveQuiz({ ...quiz})}} 
             className="btn btn-lg btn-success float-end ms-1" to={"/Kanbas/Courses/"+ cid +"/Quizzes"}>Save and Publish</Link>
-          <button id="wd-save" type="button" onMouseOver={async () => setQuiz({ ...quiz, published: false, points: await quizzesClient.findPointsForQuiz(quiz._id), questionCount: await quizzesClient.findQuestionCountForQuiz(quiz._id) })} onClick={(e) =>  {
-            saveQuizButton()
+          <button id="wd-save" type="button" onMouseOver={async () => setQuiz({ ...quiz, published: false, questionCount: await quizzesClient.findQuestionCountForQuiz(quiz._id) })} onClick={(e) =>  {
+            saveQuizButton(true)
           }} 
             className="btn btn-lg btn-info float-end ms-1"> Save </button>
           <Link id="wd-cancel" type="button" className="btn btn-lg btn-secondary float-end" to={"/Kanbas/Courses/"+ cid +"/Quizzes"}> Cancel </Link> 
